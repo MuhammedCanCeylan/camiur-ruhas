@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciltli — Bir Kitap Okuma Deneyimi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&display=swap');
+
+  :root{
+    --paper: #f2e8d5;
+    --paper-dark: #e6d7b8;
+    --ink: #2b2117;
+    --ink-soft: #55483a;
+    --leather: #4a2f21;
+    --leather-dark: #331f16;
+    --gold: #a9822f;
+    --gutter: #00000030;
+    --page-w: 380px;
+    --page-h: 560px;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: radial-gradient(ellipse at center, #3a2e22 0%, #1c150f 100%);
+    font-family:'Crimson Pro', serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    perspective: 2600px;
+  }
+
+  .room-glow{
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse 900px 500px at 50% 20%, rgba(255,220,160,0.08), transparent 70%);
+    pointer-events:none;
+  }
+
+  .book{
+    position:relative;
+    width: calc(var(--page-w) * 2);
+    height: var(--page-h);
+    max-width: 94vw;
+    max-height: 82vh;
+    transform-style: preserve-3d;
+  }
+
+  .spine-shadow{
+    position:absolute;
+    top:-14px; bottom:-14px; left:50%;
+    width:44px;
+    transform:translateX(-50%);
+    background: linear-gradient(90deg, transparent, var(--gutter) 45%, var(--gutter) 55%, transparent);
+    pointer-events:none;
+    z-index:6;
+    filter: blur(2px);
+  }
+
+  .cover-edge{
+    position:absolute; top:-14px; bottom:-14px; left:-14px; right:-14px;
+    background: var(--leather);
+    border-radius: 6px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 2px 0 rgba(255,255,255,0.04) inset;
+    z-index:0;
+  }
+  .cover-edge::before{
+    content:"";
+    position:absolute; inset:6px;
+    border: 1px solid rgba(200,170,110,0.35);
+    border-radius:3px;
+  }
+
+  .page-base{
+    position:absolute; top:0; bottom:0; width:var(--page-w);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.25), transparent 40%),
+      linear-gradient(120deg, var(--paper) 0%, var(--paper-dark) 100%);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05) inset;
+    overflow:hidden;
+    z-index:1;
+  }
+  #leftStatic{ left:0; border-radius:5px 0 0 5px; }
+  #rightStatic{ right:0; border-radius:0 5px 5px 0; }
+
+  .page-texture{
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.015) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply;
+    pointer-events:none;
+  }
+
+  .page-content{
+    position:relative; height:100%;
+    padding: 46px 38px 40px;
+    display:flex; flex-direction:column;
+    z-index:2;
+  }
+  #leftStatic .page-content, .flip-left .page-content{ padding-right:30px; }
+  #rightStatic .page-content, .flip-right .page-content{ padding-left:30px; }
+
+  .folio{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic; font-size:13px;
+    color:var(--ink-soft); opacity:0.65; letter-spacing:0.03em;
+    margin-top:auto;
+  }
+
+  .chapter-mark{
+    font-family:'Cormorant Garamond', serif;
+    font-size:13px; letter-spacing:0.16em; color:var(--gold);
+    margin-bottom:14px;
+  }
+  .chapter-title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-size:30px; line-height:1.15;
+    margin:0 0 18px; color:var(--ink);
+  }
+  .drop-cap::first-letter{
+    font-family:'Cormorant Garamond', serif;
+    font-size:52px; font-weight:600; float:left; line-height:0.8;
+    padding:6px 6px 0 0; color:var(--leather);
+  }
+  .body-text{ font-size:16.5px; line-height:1.68; color:var(--ink); text-align:justify; hyphens:auto; }
+  .body-text p{ margin:0 0 12px; }
+
+  .cover-face{
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 45%),
+      linear-gradient(160deg, var(--leather) 0%, var(--leather-dark) 100%);
+    color:#e9dcc0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    height:100%; padding:40px;
+    border: 1px solid rgba(200,170,110,0.25);
+  }
+  .cover-face .ring{
+    width:70px; height:70px; border-radius:50%;
+    border:1px solid rgba(200,170,110,0.55);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px; font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--gold);
+  }
+  .cover-face h1{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:34px; margin:0 0 8px; }
+  .cover-face p{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:15px; color:#c9b78f; margin:0; }
+  .cover-face .rule{ width:46px; height:1px; background:rgba(200,170,110,0.5); margin:18px 0; }
+  .cover-inside{
+    height:100%;
+    background: linear-gradient(120deg, #e9dfc4, #ddcfa5);
+  }
+
+  /* ---------- Sürüklenebilir yaprak katmanları ---------- */
+  .flip{
+    position:absolute; top:0; bottom:0; width:var(--page-w);
+    transform-style: preserve-3d;
+    z-index:4;
+    will-change: transform;
+  }
+  .flip-right{ right:0; transform-origin: left center; }
+  .flip-left{ left:0; transform-origin: right center; }
+
+  .flip.animating{ transition: transform 0.75s cubic-bezier(.4,.1,.2,1); }
+
+  .flip-face{
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,255,255,0.2), transparent 40%),
+      linear-gradient(120deg, var(--paper) 0%, var(--paper-dark) 100%);
+    overflow:hidden;
+  }
+  .flip-right .flip-face.front{ border-radius:0 5px 5px 0; z-index:2; }
+  .flip-right .flip-face.back{ border-radius:5px 0 0 5px; transform: rotateY(180deg); }
+  .flip-left .flip-face.front{ border-radius:5px 0 0 5px; z-index:2; }
+  .flip-left .flip-face.back{ border-radius:0 5px 5px 0; transform: rotateY(180deg); }
+
+  .fold-shadow{
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity:0;
+  }
+  .flip-right .fold-shadow{ background: linear-gradient(90deg, rgba(0,0,0,0.35), transparent 55%); }
+  .flip-left .fold-shadow{ background: linear-gradient(270deg, rgba(0,0,0,0.35), transparent 55%); }
+
+  .drag-handle{
+    position:absolute; bottom:0; width:52px; height:52px;
+    z-index:8; cursor:grab;
+  }
+  .flip-right .drag-handle{ right:0; }
+  .flip-left .drag-handle{ left:0; }
+  .drag-handle:active{ cursor:grabbing; }
+
+  .corner-curl{
+    position:absolute; bottom:0; width:26px; height:26px;
+    background: linear-gradient(135deg, transparent 50%, rgba(120,95,55,0.28) 50%);
+    pointer-events:none;
+    transition: width 0.25s ease, height 0.25s ease;
+  }
+  .flip-right .corner-curl{ right:0; border-radius:0 0 5px 0; }
+  .flip-left .corner-curl{ left:0; transform:scaleX(-1); border-radius:0 0 0 5px; }
+  .drag-handle:hover + .corner-curl,
+  .flip.dragging .corner-curl{ width:40px; height:40px; }
+
+  .under-shadow{
+    position:absolute; top:6%; bottom:6%; width:36px;
+    pointer-events:none; z-index:3; opacity:0;
+  }
+  #shadowRight{ right: var(--page-w); background: linear-gradient(90deg, rgba(0,0,0,0.25), transparent); }
+  #shadowLeft{ left: var(--page-w); background: linear-gradient(270deg, rgba(0,0,0,0.25), transparent); }
+
+  .controls{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:18px; z-index:20;
+    font-family:'Cormorant Garamond', serif;
+  }
+  .nav-btn{
+    background:rgba(233,220,192,0.1); border:1px solid rgba(200,170,110,0.4);
+    color:#e9dcc0; width:38px; height:38px; border-radius:50%; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-btn:hover{ background:rgba(233,220,192,0.2); transform:scale(1.06); }
+  .nav-btn:disabled{ opacity:0.25; cursor:default; transform:none; }
+  .page-indicator{ color:#c9b78f; font-size:15px; font-style:italic; min-width:100px; text-align:center; }
+
+  .top-bar{
+    position:fixed; top:20px; left:28px; right:28px;
+    display:flex; justify-content:space-between; align-items:center; z-index:20;
+    font-family:'Cormorant Garamond', serif; color:#c9b78f; font-size:14px; letter-spacing:0.08em;
+  }
+  .top-bar .brand{ color:#e9dcc0; font-size:17px; letter-spacing:0.1em; }
+  .top-bar .hint{ font-style:italic; opacity:0.75; }
+
+  @media (max-width: 620px){
+    :root{ --page-w: 92vw; --page-h: 68vh; }
+    .book{ width:var(--page-w); }
+    #leftStatic, .flip-left{ display:none; }
+    #rightStatic{ width:100%; border-radius:5px; }
+    .flip-right{ width:100%; }
+    .cover-edge{ left:-8px; right:-8px; top:-8px; bottom:-8px; }
+    .spine-shadow{ display:none; }
+    .page-content{ padding:34px 26px 30px; }
+    .chapter-title{ font-size:24px; }
+    .body-text{ font-size:15.5px; }
+    .top-bar .hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="room-glow"></div>
+
+<div class="top-bar">
+  <span class="brand">Ciltli</span>
+  <span class="hint">sayfanın alt köşesinden tutup sürükleyin</span>
+</div>
+
+<div class="book" id="book">
+  <div class="cover-edge"></div>
+  <div class="spine-shadow"></div>
+
+  <div class="under-shadow" id="shadowLeft"></div>
+  <div class="under-shadow" id="shadowRight"></div>
+
+  <div class="page-base" id="leftStatic"></div>
+  <div class="page-base" id="rightStatic"></div>
+
+  <div class="flip flip-left" id="flipLeft">
+    <div class="flip-face front" id="flipLeftFront"></div>
+    <div class="flip-face back" id="flipLeftBack"></div>
+    <div class="fold-shadow" id="foldLeft"></div>
+    <div class="drag-handle" id="handleLeft"></div>
+    <div class="corner-curl"></div>
+  </div>
+
+  <div class="flip flip-right" id="flipRight">
+    <div class="flip-face front" id="flipRightFront"></div>
+    <div class="flip-face back" id="flipRightBack"></div>
+    <div class="fold-shadow" id="foldRight"></div>
+    <div class="drag-handle" id="handleRight"></div>
+    <div class="corner-curl"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="nav-btn" id="prevBtn" aria-label="Önceki sayfa">‹</button>
+  <span class="page-indicator" id="pageIndicator">Kapak</span>
+  <button class="nav-btn" id="nextBtn" aria-label="Sonraki sayfa">›</button>
+</div>
+
+<script>
+/* ============ İÇERİK ============ */
+const leaves = [
+  { type:"cover" },
+  {
+    left: { chapter: "I. Bölüm", title: "Sessiz Bahçe", drop:true, text: `
+      <p>Kapı gıcırdadığında Elif'in aklına ilk gelen şey, bu sesin yıllardır değişmediğiydi. Aynı tiz nota, aynı yorgun menteşe. Bahçeye adım attığında güneş, incir ağacının yapraklarından süzülüp taş zemine benekler düşürüyordu.</p>
+      <p>Burada zaman başka türlü akardı. Şehirdeki telaş, sokaktaki korna sesleri, hepsi kapının ardında kalırdı sanki. Elif derin bir nefes aldı; toprak, nane ve ıslak taş kokusu ciğerlerini doldurdu.</p>` },
+    right: { text: `
+      <p>Masanın üzerinde hâlâ dedesinin gözlüğü duruyordu. Camları tozlanmıştı ama çerçeve, elle tutulmuş her şeyin bıraktığı o hafif parlaklığı korumuştu. Elif onu eline aldı, ince tellerini parmaklarıyla yokladı.</p>
+      <p>"Bir şey söylemeden gitmemeliydin," diye mırıldandı, sesi kendi kulağına bile yabancı geldi. Rüzgâr, incir ağacının dallarını hafifçe salladı; sanki ağaç da onu duymuştu.</p>` }
+  },
+  {
+    left: { text: `
+      <p>Duvarın dibindeki gülleri o dikmişti, on iki yaşındayken. Şimdi boyları duvarı aşmış, dikenli dalları demir parmaklıklara dolanmıştı. Elif onlara dokunmadan önce durdu; sanki bir anıya elini uzatmak, onu kırılgan kılacaktı.</p>
+      <p>Bahçenin en ucunda, kuyunun yanındaki taş banka oturdu. Buradan bütün ev görünürdü — pencereler, saçaklar, çatıdaki kırık kiremit. Her biri bir cümle gibiydi, yarım kalmış bir hikâyenin parçaları.</p>` },
+    right: { text: `
+      <p>"Bahçe kendi kendine büyümez," derdi dedesi, elleri toprağa gömülü. "Ona bakan biri olmalı, hatırlayan biri." O zamanlar bu sözün ağırlığını anlamamıştı Elif. Şimdi, yıllar sonra, kelimeler geri geliyordu, yavaş yavaş, bir yağmur gibi.</p>
+      <p>Güneş batmaya başlamıştı. Işık, incir ağacının gölgesini uzatıp taşların üzerine bir harita gibi seriyordu. Elif ayağa kalktı ve elindeki gözlüğü, dedesinin oturduğu sandalyenin üzerine bıraktı.</p>` }
+  },
+  {
+    left: { chapter: "II. Bölüm", title: "Kuyunun Sesi", drop:true, text: `
+      <p>Kuyu, çocukluğunun en gizemli köşesiydi. Kenarına yaklaşıp aşağı baktığında, karanlığın içinde kendi yansımasını ararmış gibi hissederdi. Şimdi de aynı şeyi yaptı — eğildi, avuçlarını taş kenara dayadı.</p>
+      <p>Su, derinlerde hafifçe parıldıyordu. Bir taş attı; sesin geri gelmesini bekledi. Uzun bir sessizlik oldu, sonra hafif bir "şlop" — hâlâ oradaydı demek, hâlâ derindi.</p>` },
+    right: { text: `
+      <p>"Her kuyunun bir hikâyesi vardır," diye fısıldadı kendi kendine, dedesinin sesini taklit ederek. Gülümsedi; taklidi hiç iyi değildi ama sesin tınısı içini ısıtmıştı.</p>
+      <p>Akşam serinliği çökerken bahçedeki her şey biraz daha yumuşak görünüyordu. Elif, elini ceketinin cebine attı ve oradan küçük, katlanmış bir kâğıt çıkardı — dedesinin son mektubu, hâlâ açılmamış.</p>` }
+  },
+  {
+    left: { text: `
+      <p>Mektubu açmaya cesaret edemiyordu. Belki de bahçe, tam bu an için beklemişti — kapının gıcırtısı, incir ağacının gölgesi, kuyunun sesi, hepsi bu tek anı hazırlamak içindi.</p>
+      <p>Parmakları kâğıdın kenarına dokundu. Mürekkep, zamanla solmuş ama hâlâ okunaklıydı: "Sevgili Elif, bu satırları okuduğunda ben artık bahçede olmayacağım, ama bahçe hep burada olacak..."</p>` },
+    right: { text: `
+      <p>Gözyaşları, farkına varmadan yanaklarından süzüldü. Ama bu, acının değil, bir tür huzurun gözyaşıydı. Sanki dedesi, ölümünden sonra bile ona bir şey öğretmeye devam ediyordu: geride bıraktıklarımız, bizi hatırlayanlar sayesinde yaşar.</p>
+      <p>Elif mektubu göğsüne bastırdı, sonra bahçeye, gülgillere, incir ağacına ve kuyuya son bir kez baktı. "Buraya döneceğim," dedi yavaşça. "Her yıl döneceğim."</p>` }
+  },
+  {
+    left: { chapter: "Sonsöz", title: "Bir Bahçe, Hep Kalır", drop:true, text: `
+      <p>Bu kısa öykü, "Ciltli" için hazırlanmış örnek bir metindir. Kendi kitabınızı eklemek için sayfa dizisini kendi bölümlerinizle değiştirebilirsiniz.</p>
+      <p>Her yaprak bir sol ve bir sağ sayfa içerir; başlık, bölüm etiketi ve gövde metni kolayca düzenlenebilir.</p>` },
+    right: { text: `
+      <p>Sayfayı çevirmek için alt köşesinden tutup yavaşça sürükleyin — tıpkı gerçek bir kitapta olduğu gibi. Ok tuşları ve alttaki oklar da çalışır.</p>
+      <p>İyi okumalar.</p>` }
+  }
+];
+
+const total = leaves.length;
+let current = 0;
+
+const leftStatic = document.getElementById('leftStatic');
+const rightStatic = document.getElementById('rightStatic');
+const flipRight = document.getElementById('flipRight');
+const flipLeft = document.getElementById('flipLeft');
+const flipRightFront = document.getElementById('flipRightFront');
+const flipRightBack = document.getElementById('flipRightBack');
+const flipLeftFront = document.getElementById('flipLeftFront');
+const flipLeftBack = document.getElementById('flipLeftBack');
+const foldRight = document.getElementById('foldRight');
+const foldLeft = document.getElementById('foldLeft');
+const shadowLeft = document.getElementById('shadowLeft');
+const shadowRight = document.getElementById('shadowRight');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const indicator = document.getElementById('pageIndicator');
+const handleLeft = document.getElementById('handleLeft');
+const handleRight = document.getElementById('handleRight');
+
+function pageHTML(p){
+  if(!p) return `<div class="page-content"></div>`;
+  const dc = p.drop ? 'drop-cap' : '';
+  return `
+    <div class="page-texture"></div>
+    <div class="page-content">
+      ${p.chapter ? `<div class="chapter-mark">${p.chapter}</div>` : ''}
+      ${p.title ? `<h2 class="chapter-title">${p.title}</h2>` : ''}
+      <div class="body-text ${dc}">${p.text || ''}</div>
+      <div class="folio"></div>
+    </div>`;
+}
+function coverHTML(){
+  return `<div class="cover-face"><div class="ring">C</div><h1>Sessiz Bahçe</h1><div class="rule"></div><p>bir öykü</p></div>`;
+}
+
+function buildLayers(){
+  // sağa çevrilecek yaprak (ileri gitmek için)
+  if(current < total - 1){
+    flipRight.style.display = '';
+    handleRight.style.display = '';
+    flipRightFront.innerHTML = current === 0 ? coverHTML() : pageHTML(leaves[current].right);
+    flipRightBack.innerHTML = pageHTML(leaves[current+1].left);
+    rightStatic.innerHTML = pageHTML(leaves[current+1].right);
+  } else {
+    flipRight.style.display = 'none';
+    handleRight.style.display = 'none';
+    rightStatic.innerHTML = current === 0 ? '' : pageHTML(leaves[current].right);
+  }
+
+  // sola çevrilecek yaprak (geri gitmek için)
+  if(current > 0){
+    flipLeft.style.display = '';
+    handleLeft.style.display = '';
+    flipLeftFront.innerHTML = pageHTML(leaves[current].left);
+    flipLeftBack.innerHTML = current === 1 ? coverHTML() : pageHTML(leaves[current-1].right);
+    leftStatic.innerHTML = current === 1 ? `<div class="cover-inside"></div>` : pageHTML(leaves[current-1].left);
+  } else {
+    flipLeft.style.display = 'none';
+    handleLeft.style.display = 'none';
+    leftStatic.innerHTML = '';
+  }
+
+  setAngle(flipRight, 0);
+  setAngle(flipLeft, 0);
+  foldRight.style.opacity = 0;
+  foldLeft.style.opacity = 0;
+  shadowLeft.style.opacity = 0;
+  shadowRight.style.opacity = 0;
+
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === total - 1;
+  indicator.textContent = current === 0 ? 'Kapak' : `Sayfa ${current*2 - 1}–${current*2}`;
+}
+
+function setAngle(el, deg){
+  el.style.transform = `rotateY(${deg}deg)`;
+}
+
+/* ---------- Sürükleme mantığı ---------- */
+function pageWidthPx(){
+  return flipRight.getBoundingClientRect().width;
+}
+
+function makeDraggable(handle, flipEl, dir){
+  // dir: 'next' (sağdan sola, 0 -> -180) veya 'prev' (soldan sağa, 0 -> 180)
+  let dragging = false;
+  let startX = 0;
+
+  function onDown(e){
+    if(flipEl.style.display === 'none') return;
+    dragging = true;
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    flipEl.classList.remove('animating');
+    flipEl.classList.add('dragging');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+    e.preventDefault();
+  }
+
+  function onMove(e){
+    if(!dragging) return;
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    const dx = x - startX;
+    const w = pageWidthPx();
+    let progress;
+    if(dir === 'next'){
+      progress = Math.min(Math.max(-dx / w, 0), 1);
+      setAngle(flipEl, -180 * progress);
+    } else {
+      progress = Math.min(Math.max(dx / w, 0), 1);
+      setAngle(flipEl, 180 * progress);
+    }
+    const fold = dir === 'next' ? foldRight : foldLeft;
+    fold.style.opacity = Math.min(progress * 1.4, 0.9);
+    const shadow = dir === 'next' ? shadowLeft : shadowRight;
+    shadow.style.opacity = Math.min(progress * 1.2, 0.7);
+    e.preventDefault();
+  }
+
+  function onUp(){
+    if(!dragging) return;
+    dragging = false;
+    flipEl.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onUp);
+
+    const current_deg = getCurrentDeg(flipEl);
+    const progress = Math.abs(current_deg) / 180;
+    flipEl.classList.add('animating');
+
+    if(progress > 0.4){
+      settle(flipEl, dir === 'next' ? -180 : 180, () => {
+        if(dir === 'next') current++; else current--;
+        buildLayers();
+      });
+    } else {
+      settle(flipEl, 0, () => {
+        const fold = dir === 'next' ? foldRight : foldLeft;
+        const shadow = dir === 'next' ? shadowLeft : shadowRight;
+        fold.style.opacity = 0;
+        shadow.style.opacity = 0;
+      });
+    }
+  }
+
+  function getCurrentDeg(el){
+    const t = el.style.transform;
+    const m = t.match(/-?\d+(\.\d+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  }
+
+  function settle(el, target, cb){
+    setAngle(el, target);
+    let done = false;
+    const finish = ()=>{ if(done) return; done = true; el.removeEventListener('transitionend', finish); cb && cb(); };
+    el.addEventListener('transitionend', finish);
+    setTimeout(finish, 800);
+  }
+
+  handle.addEventListener('mousedown', onDown);
+  handle.addEventListener('touchstart', onDown, {passive:false});
+}
+
+makeDraggable(handleRight, flipRight, 'next');
+makeDraggable(handleLeft, flipLeft, 'prev');
+
+/* ---------- Buton / klavye kontrolü (yumuşak animasyonla) ---------- */
+function turnNext(){
+  if(current >= total - 1) return;
+  flipRight.classList.add('animating');
+  foldRight.style.transition = 'opacity 0.75s ease';
+  foldRight.style.opacity = 0.9;
+  setAngle(flipRight, -180);
+  setTimeout(()=>{ current++; buildLayers(); }, 780);
+}
+function turnPrev(){
+  if(current <= 0) return;
+  flipLeft.classList.add('animating');
+  foldLeft.style.transition = 'opacity 0.75s ease';
+  foldLeft.style.opacity = 0.9;
+  setAngle(flipLeft, 180);
+  setTimeout(()=>{ current--; buildLayers(); }, 780);
+}
+
+prevBtn.addEventListener('click', turnPrev);
+nextBtn.addEventListener('click', turnNext);
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowRight') turnNext();
+  if(e.key === 'ArrowLeft') turnPrev();
+});
+
+buildLayers();
+</script>
+
+</body>
+</html>

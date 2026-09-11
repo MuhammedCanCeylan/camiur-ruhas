@@ -1,0 +1,15 @@
+[
+  {
+    "index": 7,
+    "kitab": "Giris",
+    "bab": "باب الأذان",
+    "canon": {
+      "ruhsat_mezhep": "Safii",
+      "ruhsat_hukum": "يستحب أن يكون الأذان بقرب المسجد",
+      "hanefi_hukum": "الأصح كما في السراج",
+      "safii_hukum": "يستحب أن يكون الأذان بقرب المسجد",
+      "maliki_hukum": "خذ هذا الباب إن شاء الله",
+      "hanbeli_hukum": "ظاهر هذا أنه رأى ذلك مستحبا"
+    }
+  }
+]

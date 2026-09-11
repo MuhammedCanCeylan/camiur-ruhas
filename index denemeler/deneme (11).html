@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CÂMİU'R-RUHAS VE TAHKÎKU'L-MEZÂHİB — Ciltli Fıkıh Kitaplığı</title>
+
+<!-- StPageFlip Styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/css/page-flip.min.css">
+
+<!-- Google Fonts: Garamond, Amiri for Arabic, Scheherazade -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --leather-outer: #33130f;
+    --leather-dark: #1f0b08;
+    --leather-spine: #280e0b;
+    --gold: #d4af37;
+    --gold-bright: #f5d77f;
+    --gold-dim: #8f7226;
+    --paper: #f8f3e6;
+    --paper-dark: #ede3ce;
+    --paper-edge: #e2d2b4;
+    --ink: #221810;
+    --ink-soft: #4a3b2c;
+    --ink-dim: #7a6a57;
+    --ruby: #7a1d1d;
+    --emerald: #1c5234;
+    --sapphire: #183e68;
+    --amber: #875412;
+    
+    /* Dynamically adjusted variables */
+    --base-w: 460px;
+    --base-h: 670px;
+    --page-w: 460px;
+    --page-h: 670px;
+    --book-font-size: 15.5px;
+    --zoom-factor: 1.0;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 35%, #2a1f18 0%, #150e0a 70%, #0c0806 100%);
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--ink);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Desk Texture & Ambient Light */
+  .desk-glow {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 1100px 700px at 50% 25%, rgba(245, 215, 127, 0.08), transparent 75%);
+    pointer-events: none; z-index: 1;
+  }
+
+  /* ================= TOP TOOLBAR ================= */
+  .top-toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 54px;
+    background: linear-gradient(180deg, rgba(16,11,8,0.95) 0%, rgba(24,16,12,0.85) 100%);
+    border-bottom: 1px solid rgba(212,175,55,0.25);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; z-index: 50;
+    backdrop-filter: blur(8px);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .brand-group {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .brand-title {
+    color: #f1e4c7;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .brand-badge {
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+    color: #1a0e08;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.12em;
+  }
+
+  .path-indicator {
+    color: #a89476;
+    font-size: 12.5px;
+    background: rgba(0,0,0,0.35);
+    padding: 4px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(212,175,55,0.2);
+    display: flex; align-items: center; gap: 6px;
+    max-width: 360px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .path-indicator span.dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #34d399;
+    box-shadow: 0 0 6px #34d399;
+  }
+
+  .top-actions {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .action-btn {
+    background: rgba(233,220,192,0.08);
+    border: 1px solid rgba(212,175,55,0.35);
+    color: #efe2c4;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13.5px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .action-btn:hover {
+    background: rgba(212,175,55,0.22);
+    border-color: var(--gold-bright);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  /* File input hidden */
+  #fileInput { display: none; }
+
+  /* ================= READER VIEWPORT ================= */
+  .viewport {
+    position: fixed; inset: 54px 0 64px 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    perspective: 2800px;
+    overflow: hidden;
+  }
+
+  .book-container {
+    position: relative;
+    width: calc(var(--page-w) * 2);
+    height: var(--page-h);
+    transform-style: preserve-3d;
+    transition: width 0.25s ease, height 0.25s ease;
+  }
+
+  /* Classical Book Physical Furniture */
+  .book-shadow {
+    position: absolute;
+    left: 50%; bottom: -38px; transform: translateX(-50%);
+    width: 90%; height: 50px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.35) 45%, transparent 75%);
+    filter: blur(6px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .spine-bump {
+    position: absolute;
+    top: -14px; bottom: -14px; left: 50%;
+    width: 44px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(0,0,0,0.35) 40%, 
+      rgba(212,175,55,0.15) 50%, 
+      rgba(0,0,0,0.35) 60%, 
+      transparent 100%
+    );
+    filter: blur(2px);
+    z-index: 25;
+    pointer-events: none;
+  }
+
+  .siraze-top {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    width: 48px; height: 9px; z-index: 26;
+    background: repeating-linear-gradient(45deg, var(--gold) 0 4px, #1c5234 4px 8px);
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+
+  .siraze-bottom {
+    position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
+    width: 48px; height: 9px; z-index: 26;
+    background: repeating-linear-gradient(45deg, var(--gold) 0 4px, #1c5234 4px 8px);
+    border-radius: 3px;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+
+  .ribbon {
+    position: absolute; top: -12px; right: 28%;
+    width: 14px; height: 80px; z-index: 27;
+    background: linear-gradient(180deg, #9a1a1a 0%, #680e0e 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 50% 100%, 0 88%);
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transition: transform 0.4s ease;
+  }
+
+  /* Hard Cover Leather Trim Around the Block */
+  .cover-backbone {
+    position: absolute;
+    top: -12px; bottom: -12px; left: -14px; right: -14px;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 50%),
+                linear-gradient(155deg, var(--leather-outer) 0%, var(--leather-dark) 100%);
+    border-radius: 6px;
+    box-shadow: 
+      0 28px 65px rgba(0,0,0,0.75),
+      0 0 0 1px rgba(212,175,55,0.3) inset,
+      0 0 20px rgba(0,0,0,0.6) inset;
+    z-index: 0;
+  }
+
+  /* Paper Block Edge Thickness Simulation */
+  .edge-right {
+    position: absolute; top: -3px; bottom: -3px; right: -12px; width: 12px;
+    background: repeating-linear-gradient(180deg, var(--paper-edge) 0 2px, #cbb793 2px 3px);
+    border-radius: 0 4px 4px 0;
+    box-shadow: inset -2px 0 4px rgba(0,0,0,0.25), 3px 3px 8px rgba(0,0,0,0.4);
+    z-index: 2; pointer-events: none;
+  }
+  .edge-bottom {
+    position: absolute; left: 6px; right: 6px; bottom: -12px; height: 12px;
+    background: repeating-linear-gradient(90deg, var(--paper-edge) 0 2px, #cbb793 2px 3px);
+    border-radius: 0 0 4px 4px;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.25), 3px 3px 8px rgba(0,0,0,0.4);
+    z-index: 2; pointer-events: none;
+  }
+
+  /* ================= ST.PAGEFLIP COMPONENT ================= */
+  #flipbook {
+    width: calc(var(--page-w) * 2);
+    height: var(--page-h);
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Base Page Styling */
+  .page {
+    background-color: var(--paper);
+    background-image: 
+      radial-gradient(circle at 10% 15%, rgba(255,255,255,0.35), transparent 45%),
+      linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    overflow: hidden;
+    color: var(--ink);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset;
+  }
+
+  /* Hard Cover Page (Front outer, Inside front, Inside back, Back outer) */
+  .page[data-density="hard"] {
+    background-color: var(--leather-dark);
+    box-shadow: none;
+  }
+
+  /* Outer Front Cover */
+  .cover-front {
+    height: 100%;
+    background: 
+      radial-gradient(circle at 35% 25%, rgba(255,255,255,0.12), transparent 40%),
+      linear-gradient(150deg, var(--leather-outer) 0%, var(--leather-dark) 100%);
+    color: #f7eed7;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 38px 28px;
+    text-align: center;
+    border: 2px solid rgba(212,175,55,0.45);
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8), inset 0 0 0 4px rgba(212,175,55,0.2);
+  }
+
+  .cover-front::before {
+    content: "";
+    position: absolute; inset: 12px;
+    border: 1.5px solid rgba(212,175,55,0.65);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .cover-front::after {
+    content: "";
+    position: absolute; inset: 18px;
+    border: 1px dashed rgba(212,175,55,0.35);
+    pointer-events: none;
+  }
+
+  /* Corner Ornaments (Tezhip Köşebentler) */
+  .cover-corner {
+    position: absolute; width: 28px; height: 28px;
+    border: 2px solid var(--gold);
+    pointer-events: none; z-index: 2;
+  }
+  .cover-corner.tl { top: 22px; left: 22px; border-right: none; border-bottom: none; }
+  .cover-corner.tr { top: 22px; right: 22px; border-left: none; border-bottom: none; }
+  .cover-corner.bl { bottom: 22px; left: 22px; border-right: none; border-top: none; }
+  .cover-corner.br { bottom: 22px; right: 22px; border-left: none; border-top: none; }
+
+  /* Gilded Shamsah Medallion (Şemse) */
+  .shamsah {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 15px rgba(212,175,55,0.35), inset 0 0 12px rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    background: radial-gradient(circle, rgba(212,175,55,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  }
+  .shamsah svg {
+    width: 52px; height: 52px; fill: var(--gold);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+  }
+
+  .cover-kicker {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+
+  .cover-title-ar {
+    font-family: 'Amiri', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    direction: rtl;
+  }
+
+  .cover-title-tr {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #f7eed7;
+    margin: 0 0 14px 0;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+  }
+
+  .cover-rule {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 12px auto 16px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    color: #c9b78f;
+    max-width: 320px;
+    line-height: 1.45;
+    margin: 0 0 24px;
+  }
+
+  .cover-author {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13.5px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(212,175,55,0.3);
+    padding-top: 12px;
+  }
+
+  .cover-hint {
+    position: absolute; bottom: 32px;
+    font-size: 12.5px;
+    color: #a89476;
+    font-style: italic;
+    opacity: 0.8;
+    animation: pulseHint 2.4s infinite ease-in-out;
+  }
+  @keyframes pulseHint {
+    0%, 100% { opacity: 0.5; transform: translateY(0); }
+    50% { opacity: 0.95; transform: translateY(-3px); }
+  }
+
+  /* Inside Cover (Ebru / Yan Kâğıdı) */
+  .cover-inside {
+    height: 100%;
+    background: 
+      radial-gradient(circle at 80% 20%, rgba(212,175,55,0.18), transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(122,29,29,0.22), transparent 50%),
+      repeating-radial-gradient(circle at 50% 50%, #dfd3ba 0 6px, #cfc09f 6px 12px, #c3b28f 12px 18px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 30px; text-align: center;
+    position: relative;
+    box-shadow: inset 0 0 35px rgba(0,0,0,0.45);
+  }
+
+  .ex-libris-frame {
+    background: rgba(248, 243, 230, 0.94);
+    border: 2px solid var(--gold);
+    padding: 24px 20px;
+    border-radius: 4px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    max-width: 280px;
+    width: 100%;
+  }
+  .ex-libris-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--leather-dark);
+    letter-spacing: 0.2em;
+    font-weight: 700;
+  }
+  .ex-libris-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 20px;
+    color: var(--ruby);
+    margin: 8px 0;
+  }
+  .ex-libris-text {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* ================= INNER PAGES LAYOUT ================= */
+  .page-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 36px 32px;
+    position: relative;
+    font-size: var(--book-font-size);
+    line-height: 1.6;
+    color: var(--ink);
+    user-select: text;
+  }
+
+  /* Subtle parchment grain */
+  .page-inner::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.012) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  /* Running Header (Ser-levha bandı) */
+  .running-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(143,114,38,0.35);
+    padding-bottom: 8px; margin-bottom: 18px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .running-header .book-title-mini { color: var(--gold-dim); font-weight: 600; }
+
+  /* Running Footer / Folio */
+  .running-footer {
+    margin-top: auto;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(143,114,38,0.25);
+    padding-top: 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+  .folio-num { font-weight: 600; letter-spacing: 0.1em; }
+
+  /* Content typography */
+  .section-kicker {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+  .chapter-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ruby);
+    margin: 0 0 14px 0;
+    line-height: 1.25;
+    border-bottom: 1px solid rgba(122,29,29,0.2);
+    padding-bottom: 6px;
+  }
+
+  .serlevha-box {
+    background: rgba(212,175,55,0.08);
+    border: 1px solid var(--gold);
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    border-radius: 3px;
+    position: relative;
+  }
+  .bismillah {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--leather-outer);
+    margin-bottom: 6px;
+    direction: rtl;
+  }
+
+  /* Ruhsat Banner (LİTE TATBİKAT) */
+  .ruhsat-banner {
+    background: linear-gradient(135deg, rgba(28,82,52,0.08) 0%, rgba(212,175,55,0.12) 100%);
+    border: 1px solid rgba(28,82,52,0.45);
+    border-left: 4px solid var(--emerald);
+    padding: 10px 14px;
+    margin: 10px 0 14px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .ruhsat-badge {
+    display: inline-block;
+    background: var(--emerald);
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-bottom: 4px;
+  }
+  .ruhsat-text {
+    font-weight: 600;
+    color: var(--leather-dark);
+    font-size: calc(var(--book-font-size) * 0.98);
+    line-height: 1.45;
+  }
+
+  /* Mezhep Grid / Cards */
+  .mezhep-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .mezhep-card {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(143,114,38,0.25);
+    border-radius: 4px;
+    padding: 8px 11px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .mezhep-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .mezhep-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .mezhep-tag {
+    font-size: 9.5px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .mezhep-tag.hanefi { background: rgba(28,82,52,0.15); color: #154228; border: 1px solid #1c5234; }
+  .mezhep-tag.shafii { background: rgba(24,62,104,0.15); color: #113155; border: 1px solid #183e68; }
+  .mezhep-tag.maliki { background: rgba(122,29,29,0.15); color: #611313; border: 1px solid #7a1d1d; }
+  .mezhep-tag.hanbeli { background: rgba(135,84,18,0.15); color: #633c09; border: 1px solid #875412; }
+
+  .mezhep-hukum {
+    font-size: calc(var(--book-font-size) * 0.92);
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .arabic-quote {
+    font-family: 'Amiri', serif;
+    direction: rtl;
+    font-size: calc(var(--book-font-size) * 1.05);
+    color: #3b2a1a;
+    background: rgba(212,175,55,0.07);
+    padding: 5px 8px;
+    border-radius: 3px;
+    border-right: 2px solid var(--gold);
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+
+  .telfik-box {
+    background: rgba(122,29,29,0.06);
+    border: 1px dashed rgba(122,29,29,0.4);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: calc(var(--book-font-size) * 0.9);
+  }
+  .telfik-title {
+    font-weight: 700;
+    color: var(--ruby);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    margin-bottom: 3px;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* Table of Contents (Fihrist) */
+  .toc-list {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .toc-item {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 7px 4px;
+    border-bottom: 1px dotted rgba(143,114,38,0.3);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-radius: 3px;
+  }
+  .toc-item:hover {
+    background: rgba(212,175,55,0.15);
+    color: var(--ruby);
+  }
+  .toc-num {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--gold-dim);
+    margin-right: 8px;
+  }
+  .toc-label {
+    flex: 1;
+    font-weight: 600;
+    font-size: calc(var(--book-font-size) * 0.94);
+  }
+  .toc-page {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-dim);
+    margin-left: 8px;
+  }
+
+  /* ================= BOTTOM FLOATING CONTROLS ================= */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 64px;
+    background: linear-gradient(0deg, rgba(16,11,8,0.95) 0%, rgba(24,16,12,0.85) 100%);
+    border-top: 1px solid rgba(212,175,55,0.25);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; z-index: 50;
+    backdrop-filter: blur(8px);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .nav-group {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .nav-btn {
+    background: rgba(233,220,192,0.08);
+    border: 1px solid rgba(212,175,55,0.35);
+    color: #efe2c4;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nav-btn:hover {
+    background: rgba(212,175,55,0.25);
+    border-color: var(--gold-bright);
+    color: #fff;
+    transform: scale(1.08);
+  }
+  .nav-btn:disabled {
+    opacity: 0.25; cursor: default; transform: none;
+  }
+
+  .page-status {
+    color: #eeddbb;
+    font-size: 15px;
+    min-width: 140px;
+    text-align: center;
+    font-style: italic;
+    letter-spacing: 0.04em;
+  }
+
+  .tool-group {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .tool-subgroup {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(212,175,55,0.2);
+  }
+
+  .tool-label {
+    font-size: 12px;
+    color: #bfa886;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-right: 4px;
+    padding-left: 4px;
+  }
+
+  .tool-btn {
+    background: rgba(233,220,192,0.1);
+    border: 1px solid rgba(212,175,55,0.25);
+    color: #f3e5c8;
+    min-width: 28px; height: 28px;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 7px;
+    transition: all 0.15s ease;
+  }
+  .tool-btn:hover {
+    background: rgba(212,175,55,0.3);
+    color: #fff;
+  }
+
+  .tool-val {
+    font-size: 13px;
+    color: var(--gold-bright);
+    font-weight: 600;
+    min-width: 38px;
+    text-align: center;
+  }
+
+  .cover-toggle-btn {
+    background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(122,29,29,0.3));
+    border: 1px solid var(--gold);
+    color: #f7eed7;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13.5px;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .cover-toggle-btn:hover {
+    background: linear-gradient(135deg, rgba(212,175,55,0.4), rgba(122,29,29,0.5));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  /* ================= TOC MODAL ================= */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10, 6, 4, 0.75);
+    backdrop-filter: blur(5px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-card {
+    background: linear-gradient(145deg, #f7f1e3 0%, #ebe0cb 100%);
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    width: 90%; max-width: 540px;
+    max-height: 80vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .modal-header {
+    background: var(--leather-dark);
+    color: #f5eed8;
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 {
+    margin: 0; font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .modal-close {
+    background: none; border: none; color: #f5eed8; font-size: 20px; cursor: pointer;
+  }
+  .modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+  }
+
+  /* Responsive Mobile */
+  @media (max-width: 920px) {
+    :root {
+      --base-w: 92vw;
+      --base-h: 70vh;
+      --page-w: 92vw;
+      --page-h: 70vh;
+    }
+    .book-container { width: var(--page-w); }
+    #flipbook { width: var(--page-w); }
+    .spine-bump, .siraze-top, .siraze-bottom, .ribbon { display: none; }
+    .path-indicator { display: none; }
+    .tool-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="desk-glow"></div>
+
+<!-- ================= TOP TOOLBAR ================= -->
+<header class="top-toolbar">
+  <div class="brand-group">
+    <div class="brand-title">
+      <span>CÂMİU'R-RUHAS</span>
+      <span class="brand-badge">LİTE TATBİKAT</span>
+    </div>
+    <div class="path-indicator" title="Proje Markdown Dosya Yolu">
+      <span class="dot"></span>
+      <span id="filePathDisplay">D:\fikh_kitap\Camiur_Ruhas_Nihai_Kulliyat.md</span>
+    </div>
+  </div>
+
+  <div class="top-actions">
+    <button class="action-btn" id="openTocBtn" title="İçindekiler Fihristi">
+      <span>☰</span> Fihrist
+    </button>
+    <button class="action-btn" id="filePickerBtn" title="Diskteki .md dosyasını seç / güncelle">
+      <span>📂</span> Dosya Seç
+    </button>
+    <input type="file" id="fileInput" accept=".md,.txt,.markdown">
+  </div>
+</header>
+
+<!-- ================= MAIN VIEWPORT & 3D STAGE ================= -->
+<main class="viewport">
+  <div class="book-container" id="bookContainer">
+    <div class="book-shadow"></div>
+    <div class="cover-backbone"></div>
+    <div class="edge-right"></div>
+    <div class="edge-bottom"></div>
+    <div class="spine-bump"></div>
+    <div class="siraze-top"></div>
+    <div class="siraze-bottom"></div>
+    <div class="ribbon"></div>
+
+    <!-- FlipBook DOM Container -->
+    <div id="flipbook"></div>
+  </div>
+</main>
+
+<!-- ================= BOTTOM TOOLBAR ================= -->
+<footer class="bottom-bar">
+  <div class="nav-group">
+    <button class="cover-toggle-btn" id="closeFrontBtn" title="Kalın Ön Kapağı Kapat">
+      <span>📕</span> Ön Kapak
+    </button>
+    <button class="nav-btn" id="prevBtn" aria-label="Önceki Sayfa">‹</button>
+    <span class="page-status" id="pageStatus">Yükleniyor...</span>
+    <button class="nav-btn" id="nextBtn" aria-label="Sonraki Sayfa">›</button>
+    <button class="cover-toggle-btn" id="closeBackBtn" title="Kalın Arka Kapağı Kapat">
+      <span>📕</span> Arka Kapak
+    </button>
+  </div>
+
+  <div class="tool-group">
+    <!-- Yazı Boyutu Ayarlama -->
+    <div class="tool-subgroup">
+      <span class="tool-label">Yazı:</span>
+      <button class="tool-btn" id="fontDecBtn" title="Yazı Boyutunu Küçült">A−</button>
+      <span class="tool-val" id="fontSizeDisplay">15.5px</span>
+      <button class="tool-btn" id="fontIncBtn" title="Yazı Boyutunu Büyüt">A+</button>
+    </div>
+
+    <!-- Kitap Büyütme / Küçültme (Zoom) -->
+    <div class="tool-subgroup">
+      <span class="tool-label">Kitap:</span>
+      <button class="tool-btn" id="zoomOutBtn" title="Kitabı Küçült">−</button>
+      <span class="tool-val" id="zoomDisplay">100%</span>
+      <button class="tool-btn" id="zoomInBtn" title="Kitabı Büyüt">+</button>
+      <button class="tool-btn" id="zoomResetBtn" title="Orijinal Boyuta Sığdır">Sığdır</button>
+    </div>
+
+    <button class="action-btn" id="fullscreenBtn" title="Tam Ekran Modu">⛶</button>
+  </div>
+</footer>
+
+<!-- ================= TOC MODAL ================= -->
+<div class="modal-overlay" id="tocModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>FİHRİST-İ MEZÂHİB (İÇİNDEKİLER)</h3>
+      <button class="modal-close" id="closeTocModal">&times;</button>
+    </div>
+    <div class="modal-body" id="modalTocList"></div>
+  </div>
+</div>
+
+<!-- StPageFlip Engine -->
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+
+<script>
+/* =========================================================================
+   EMBEDDED MASTER MARKDOWN (D:\fikh_kitap\Camiur_Ruhas_Nihai_Kulliyat.md)
+   ========================================================================= */
+const DEFAULT_MD_SOURCE = `# CÂMİU'R-RUHAS VE TAHKÎKU'L-MEZÂHİB
+## Dört Mezhep Esaslı En Hafif ve Sahih Fıkıh Külliyatı (Lite Tatbikat)
+
+---
+
+### MUKADDİME VE METODOLOJİ
+Bu eser; İslam Hukuku'nun dört hak mezhebi (Hanefî, Mâlikî, Şâfiî, Hanbelî) çerçevesinde kalarak, mükellefi meşakkatten kurtaran **en hafif, uygulanabilir ve sahih ruhsatları** tahrîc etmek amacıyla telif edilmiştir.
+
+**Temel Prensipler:**
+1. **Sıfır Halüsinasyon ve Sahih Nakil:** Mezhep hükümleri, müellifler ve kaynak ibareler doğrudan klasik kaynak metinleri üzerinden tahrîc edilmiştir.
+2. **Telfîk-i Bâtıl Güvencesi:** Hiçbir amelde icmâ-i mürekkep ihlaline yol açılmamış; seçilen ruhsatın intisap edilen mezhep çerçevesinde bütünüyle sahih olması garanti edilmiştir.
+3. **Şeffaf İstidlâl:** Her meselenin menşe-i hilâfı, illet ve hikmet tahlili fıkıh usûlüne göre açıklanmıştır.
+
+---
+
+# BÖLÜM: KITÂBÜ'T-TAHÂRET
+## MESELE 001: Abdestte Niyetin Farziyeti ve Unutulması
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Abdestte niyet farz veya sıhhat şartı değildir, sünnettir. Niyetsiz alınan abdest sahihtir, onunla namaz kılınabilir.
+- **Esas Alınan Mezhep:** Hanefî Mezhebi
+- **Sıhhat ve Telfîk Güvencesi:** Bu amel, intisap edilen mezhebin rükün ve şartlarına bütünüyle uygundur. Dört mezhebin dördü tarafından da geçersiz sayılan bir terkip (icmâ-i mürekkep) doğurmaz; amel meşru ve sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Sünnet / Müstehap (Abdestin sıhhat şartı değildir; su bizâtihi temizleyicidir).
+- **Kaynak İbâre:** *Şemsü'l-Eimme es-Serahsî (v. 483)* (el_Mabsut, C:01, S:089): «ولنا ) آية الوضوء ففيها تنصيص على الغسل والمسح وذلك يتحقق بدون النية فاشتراط النية يكون زيادة على النص إذ ليس في اللفظ المنصوص ما يدل على النية والزيادة لا تثبت...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Farz / Rükün (Niyetsiz abdest geçersizdir; hadesteki kirlilik ancak niyetle kalkar).
+- **Kaynak İbâre:** *Şemsüddîn er-Remlî (v. 1004)* (Nihayetul_Muhtac, C:01, S:158): «والأصل في وجوب النية قوله تعالى @QB@ وما أمروا إلا ليعبدوا الله مخلصين @QE@ والإخلاص النية وخبر الصحيحين إنما الأعمال بالنيات أي الأعمال المعتد بها شرعا ولأن ال...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Farz / Sıhhat Şartı (Niyet ibadetin ayrılmaz parçasıdır).
+- **Kaynak İbâre:** *el-Hattâb er-Ruaynî (v. 954)* (Mawahibul_Jalil, C:01, S:235): «ما لا يكون صورة فعله كافية في تحصيل المقصود منه كالصلوات والطهارات والصيام والنسك فإن المقصود منها تعظيم الله تعالى والخضوع له وذلك إنما يحصل إذا قصدت من أجله و...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Farz / Şart (Namaz gibi müstakil niyete muhtaçtır).
+- **Kaynak İbâre:** *Mansûr el-Buhûtî (v. 1051)* (Kassafu_l_Kina, C:01, S:090): «شرط لطهارة الحدث ) وضوءا كانت أو غسلا ( ولتيمم ) ولو مسنونا أو عن نجاسة ببدن ( و ) ل ( غسل وتجديد وضوء مستحبين ولغسل يدي قائم من نوم ليل ويأتي ولغسل ميت ) لأن ا...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Dört mezhebin abdestte niyetin farz veya sıhhat şartı olup olmadığı konusundaki ihtilafı; nassların sübutu, lafızların delâlet mertebeleri ile tahâret amelinin mahiyetine dair illet ve hikmet tahlillerine dayanmaktadır. Hanefîler Mâide 6. âyetindeki çıplak emri esas alırken, Şâfiî ve Mâlikîler niyet hadisini sıhhat şartı kılar.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+- **Telfîk Riski:** Yoktur. Hanefî mezhebinde niyet sünnettir.
+- **Fetvâ:** Niyetsiz veya serinlemek için alınan abdest ile Hanefî mezhebi takliden namaz kılınabilir.
+
+---
+
+# BÖLÜM: KITÂBÜ'T-TAHÂRET
+## MESELE 002: Abdestte Tertip (Sıraya Uyma) ve Muvâlât (Peşpeşe Yıkama)
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Uzuvları sırasız yıkamak veya araya fasıla verip uzuvlar kuruduktan sonra devam etmek abdestin sıhhatine zarar vermez.
+- **Esas Alınan Mezhep:** Hanefî Mezhebi (Tertip ve Muvâlât için)
+- **Sıhhat ve Telfîk Güvencesi:** İntisap edilen mezhebe bütünüyle uygundur; icmâ-i mürekkep doğurmaz.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Tertip ve muvâlât sünnettir, terki abdesti iptal etmez.
+- **Kaynak İbâre:** *Alâüddîn el-Kâsânî (v. 587)* (Bedaiu_s_Sanai, C:01, S:021): «في الوضوء ومنها الترتيب في الوضوء لأن النبي واظب عليه ومواظبته عليه دليل السنة...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Tertip farzdır (sırasız abdest bâtıldır), muvâlât ise sünnettir.
+- **Kaynak İbâre:** *Muhyiddîn en-Nevevî (v. 676)* (el_Mecmu, C:01, S:509): «فإن توضأ منكسا لم يحصل له إلا الوجه إن قارنته النية...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Muvâlât farzdır (kuruyacak kadar beklemek abdesti bozar), tertip sünnettir.
+- **Kaynak İbâre:** *el-Hattâb er-Ruaynî (v. 954)* (Mawahibul_Jalil, C:01, S:312): «وينوي الطهارة عند أول واجبه كالوضوء وموالاة كالوضوء...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Hem tertip hem de muvâlât abdestin rükünlerindendir.
+- **Kaynak İbâre:** *Mansûr el-Buhûtî (v. 1051)* (Kassafu_l_Kina, C:01, S:104): «والترتيب والموالاة فرضان في الوضوء لما تقدم...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Âyette geçen atıf vâvı mutlak cem' içindir; tertip ifade etmez (Hanefî usûlü). Şâfiîler ise âyette meshedilen başın iki yıkanan uzuv arasına girmesini tertibin farziyetine delil sayarlar.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Su kesintisi veya unutma ile uzuvlar kuruduktan sonra devam eden kimse abdesti baştan almak zorunda değildir; kaldığı yerden tamamlar.
+
+---
+
+# BÖLÜM: KITÂBÜ'T-TAHÂRET
+## MESELE 003: Karşı Cinsle Temasın (Dokunmanın) Abdesti Bozması
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Karşı cinse çıplak tenle dokunmak, temas şehvetsiz olduğu sürece abdesti bozmaz.
+- **Esas Alınan Mezhep:** Hanefî Mezhebi
+- **Sıhhat ve Telfîk Güvencesi:** Amel sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Mutlak olarak bozmaz (Âyetteki 'lems' cimâ manasındadır; Hz. Âişe rivâyeti esastır).
+- **Kaynak İbâre:** *Alâüddîn el-Kâsânî (v. 587)* (Bedaiu_s_Sanai, C:01, S:031): «كان رسول الله يقبل بعض نسائه ثم يخرج إلى الصلاة ولا يتوضأ...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Yabancı kadına çıplak temas mutlak olarak abdesti bozar.
+- **Kaynak İbâre:** *İmam eş-Şâfiî (v. 204)* (el_Umm, C:01, S:056): «فمن قبل امرأته أو جسها بيده فعليه الوضوء...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Şehvetle temas bozar; şehvetsiz bozmaz.
+- **Kaynak İbâre:** *el-Hattâb (v. 954)* (Mawahibul_Jalil, C:01, S:298): «ينتقض من اللمس إذا قصد اللذة أو وجدها...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Şehvet kastı veya lezzet bulunmadıkça bozmaz.
+- **Kaynak İbâre:** *el-Buhûtî (v. 1051)* (Kassafu_l_Kina, C:01, S:133): «ولا ينتقض وضوء بانتشار بلا شهوة...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+"Ev lâmestümü'n-nisâ" lafzının hakiki dokunma mı yoksa cima kinayesi mi olduğu hususundaki sahabe ihtilafıdır. İbn Abbas kinaye kabul etmiştir.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Kalabalıkta, çarşıda, hac tavafında gayriihtiyari kadınlara temas abdesti bozmaz.
+
+---
+
+# BÖLÜM: KITÂBÜ'T-TAHÂRET
+## MESELE 004: Vücuttan Kan veya İrin Çıkmasının Abdesti Bozması
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Ön ve arka avret dışındaki bir yerden (burun, yara, enjeksiyon vb.) kan veya irin çıkması ne kadar çok olursa olsun abdesti bozmaz.
+- **Esas Alınan Mezhep:** Şâfiî ve Mâlikî Mezhepleri
+- **Sıhhat ve Telfîk Güvencesi:** İcmâ-i mürekkep doğurmaz; amel sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Yaradan çıkıp taşan kan abdesti kesinlikle bozar.
+- **Kaynak İbâre:** *es-Serahsî (v. 483)* (el_Mabsut, C:01, S:089): «خروج الدم نجس ينقض الوضوء إذا سال عن رأس الجرح...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** İki yol (sebilayn) dışından çıkan kan abdesti bozmaz.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:02, S:005): «فأما الخارج من غير السبيلين كالدم والقيء فلا ينقض بحال...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Ön ve arka haricindeki bedenden çıkan kan abdesti mutlak surette bozmaz.
+- **Kaynak İbâre:** *el-Hattâb (v. 954)* (Mawahibul_Jalil, C:01, S:496): «ولا ينقض الخارج من غير مخرجه المعتاد كالفصد والحجامة...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Fahiş (aşırı çok) miktarda ise bozar; az miktarda bozmaz.
+- **Kaynak İbâre:** *İbn Kudâme (v. 620)* (el_Mugni, C:01, S:110): «والخارج النجس من غير السبيلين إن كان يسيرا لم ينقض...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Hadislerdeki kandan abdest alma rivayetlerinin sübutu ve Hz. Ömer'in yarasından kan akarken namaz kılması gibi sahabe amellerinin yorumudur.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Tahlil için kan veren, iğne vurulan veya burnu kanayan kimse Şâfiî mezhebine uyarak abdestini yenilemeksizin namaz kılabilir.
+
+---
+
+# BÖLÜM: KITÂBÜ'S-SALÂT
+## MESELE 005: Yolculukta ve Meşakkat Anında İki Namazın Birleştirilmesi (Cem')
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Meşru seferde, şiddetli yağmur veya meşakkatte Öğle ile İkindi, Akşam ile Yatsı namazları cem'-i takdîm veya cem'-i te'hîr ile birleştirilebilir.
+- **Esas Alınan Mezhep:** Şâfiî, Mâlikî ve Hanbelî Mezhepleri
+- **Sıhhat ve Telfîk Güvencesi:** Amel sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Hacda Arafat ve Müzdelife hariç hiçbir yerde hakiki cem' caiz değildir.
+- **Kaynak İbâre:** *el-Kâsânî (v. 587)* (Bedaiu_s_Sanai, C:01, S:133): «ولنا أن تأخير الصلاة عن وقتها من الكبائر فلا يباح بعذر السفر والمطر...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Seferde ve şiddetli yağmurda takdim ve tehîr sahihtir.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:04, S:322): «يجوز الجمع بين الظهر والعصر وبين المغرب والعشاء في السفر...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Sefer ve yağmur meşakkatinde cem' caiz ve meşrudur.
+- **Kaynak İbâre:** *İbn Abdilberr (v. 463)* (el_Kafi, C:01, S:035): «ورخص مالك في الجمع بين الظهر والعصر والمغرب والعشاء في السفر...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Sefer, hastalık, yağmur ve meşakkat veren hallerde cem' caizdir (en geniş ruhsat).
+- **Kaynak İbâre:** *el-Merdâvî (v. 885)* (el_Insaf, C:02, S:363): «يجوز الجمع بين الصلاتين لعذر المطر والوحل والمرض والسفر...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Sahih-i Müslim'deki cem' rivayetlerini Hanefîler صورî cem' sayarken, cumhur-ı fukaha hakiki cem' olarak tatbik etmiştir.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Yolculuk esnasında mola imkânı bulamayan mükellef, Hanbelî veya Şâfiî mezhebini takliden namazlarını cem' edebilir.
+
+---
+
+# BÖLÜM: KITÂBÜ'S-SALÂT
+## MESELE 006: Namazda İftitah Tekbiri Dışında Elleri Kaldırmak (Ref'u'l-Yedeyn)
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Namazda eller yalnızca başlarken iftitah tekbirinde kaldırılır; rükûda el kaldırmamak sünnettir ve namaz sahihtir.
+- **Esas Alınan Mezhep:** Hanefî Mezhebi
+- **Sıhhat ve Telfîk Güvencesi:** Amel sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** İftitah haricinde eller kaldırılmaz; sükûn esastır.
+- **Kaynak İbâre:** *el-Kâsânî (v. 587)* (Bedaiu_s_Sanai, C:01, S:214): «ولنا حديث ابن مسعود رضي الله عنه أنه صلى فلم يرفع يديه إلا مرة واحدة...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Rükûa inerken ve kalkarken elleri kaldırmak müekked sünnettir.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:03, S:379): «رفع اليدين عند الركوع وعند الرفع منه سنة صحيحة متواترة...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Meşhur kavle göre yalnızca iftitah tekbirinde kaldırılır.
+- **Kaynak İbâre:** *el-Hattâb (v. 954)* (Mawahibul_Jalil, C:01, S:520): «المشهور من مذهب مالك أنه لا يرفع يديه إلا في تكبيرة الإحرام...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** İftitah, rükû iniş ve kalkışında elleri kaldırmak sünnettir.
+- **Kaynak İbâre:** *el-Buhûtî (v. 1051)* (Kassafu_l_Kina, C:01, S:354): «ويرفع يديه ندبا مع ابتداء تكبير الركوع والرفع منه...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+İbn Ömer ile İbn Mes'ûd rivayetleri arasındaki nesh ve takrir tartışmasıdır.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Hanefî tatbikatı namazdaki sükûneti ve huşûu artırdığından en sade ve sağlam ameli oluşturur.
+
+---
+
+# BÖLÜM: KITÂBÜ'S-SALÂT
+## MESELE 007: İmama Uyan Kişinin Fatiha Okuma Mecburiyeti
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Cemaatle kılınan namazda imama uyan kimsenin hem sesli hem gizli namazda Fatiha okuması gerekmez; imamın kıraati cemaatin de kıraatidir.
+- **Esas Alınan Mezhep:** Hanefî Mezhebi
+- **Sıhhat ve Telfîk Güvencesi:** Amel sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** İmama uyanın kıraat yapması tahrîmen mekruhtur; sükût eder.
+- **Kaynak İbâre:** *es-Serahsî (v. 483)* (el_Mabsut, C:01, S:211): «وإذا قرئ القرآن فاستمعوا له وأنصتوا... ومن كان له إمام فقراءة الإمام له قراءة...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Fatiha her rekâtta imama da cemaate de farzdır.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:03, S:322): «وجوب قراءة الفاتحة على المأموم في كل الركعات من الصلاة السرية والجهرية...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Gizlide müstehap, cehrîde sükût farzdır.
+- **Kaynak İbâre:** *İbn Abdilberr (v. 463)* (el_Kafi, C:01, S:040): «يقرأ المأموم في السرية ولا يقرأ فيما جهر فيه الإمام...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Gizlide okur, imamın sesli okuduğunda dinler.
+- **Kaynak İbâre:** *el-Buhûtî (v. 1051)* (Kassafu_l_Kina, C:01, S:463): «تستحب قراءة الفاتحة للمأموم في سكتات الإمام وفيما لا يجهر فيه...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+"Fatihasız namaz olmaz" hadisi ile "Kur'an okunduğunda susup dinleyin" âyetinin telif şeklidir.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Cemaate yetiştiğinde Fatiha'yı okuyamayan kişi tereddüt etmeksizin Hanefî ameline uyarak rükûa varır.
+
+---
+
+# BÖLÜM: KITÂBÜ'L-BÜYÛ'
+## MESELE 008: Veresiye Verilen Borcun Başka Bir Borçla Takası (Kâli' bi'l-Kâli')
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Peşin bir bedel ödenmeksizin vadeli bir borcun başka bir vadeli borç ile takası 4 mezhebin ittifakıyla haram ve bâtıldır; ruhsatı yoktur.
+- **Esas Alınan Mezhep:** Ruhsat Yoktur (İcmâen Bâtıldır)
+- **Sıhhat ve Telfîk Güvencesi:** Dört mezhebin icmâsıdır.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Bâtıldır ve ribâ şüphesi taşır.
+- **Kaynak İbâre:** *es-Serahsî (v. 483)* (el_Mabsut, C:12, S:169): «فلنهي النبي صلى الله عليه وسلم عن بيع الكالئ بالكالئ يعني الدين بالدين...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Garar ve ribâ akitlerindendir, bâtıldır.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:09, S:391): «نهى النبي صلى الله عليه وسلم عن بيع الكالىء بالكلىء وهو النسئية بالنسئية...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Deyn bi'd-deyn icmâ ile fâsittir.
+- **Kaynak İbâre:** *İbn Abdilberr (v. 463)* (el_Kafi, C:01, S:363): «وهو الدين بالدين وهذا إجماع لا خلاف فيه...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Hadisin açık nehyi ve icmâ gereği kat'iyyen haramdır.
+- **Kaynak İbâre:** *el-Merdâvî (v. 885)* (el_Insaf, C:05, S:070): «ولا يجوز بيع الكالئ بالكالئ وهو بيع الدين بالدين بالإجماع...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Meselede hilaf yoktur. Borcun borçla takası faiz ve garar doğurduğundan ittifakla men edilmiştir.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+Hiçbir mezhepte cevaz bulunmadığından taklit veya telfik yoluyla buna fetva verilemez.
+
+---
+
+# BÖLÜM: KITÂBÜ'L-BÜYÛ'
+## MESELE 009: Vadeli Mal Alıp Peşin Geri Satmak (Bey'u'l-Îne ve Hile-i Şer'iyye)
+
+## 1. RUHSAT VE EN HAFİF AMELÎ HÜKÜM (LİTE TATBİKAT)
+- **Uygulanacak Kolaylık:** Akit esnasında şart koşulmadığı ve iki bağımsız akit yapıldığı sürece, tarafların bâtınî niyeti nakit temini olsa dahi akit zâhiren sahihtir (İmam Şâfiî zâhire göre hükmeder).
+- **Esas Alınan Mezhep:** Şâfiî Mezhebi (Zâhirî Akit Geçerliliği)
+- **Sıhhat ve Telfîk Güvencesi:** Amel zâhiren sahihtir.
+
+## 2. DÖRT MEZHEBİN DELİL VE İSTİDLÂL HARİTASI
+### 1. Hanefî Mezhebi
+- **Hüküm:** Fâsittir ve tahrîmen mekruhtur; ribâ vesilesidir.
+- **Kaynak İbâre:** *İbn Âbidîn (v. 1252)* (Reddul_Muhtar, C:05, S:186): «وبيع العينة مكروه تحريما لما فيه من شبهة الربا...»
+
+### 2. Şâfiî Mezhebi
+- **Hüküm:** Zâhirî şartlar tam ise ve şart koşulmamışsa akit geçerlidir.
+- **Kaynak İbâre:** *en-Nevevî (v. 676)* (el_Mecmu, C:09, S:391): «إذا باع سلعة بثمن مؤجل ثم اشتراها بنقد جاز عندنا لأن البيعين تمّا بشرائطهما...»
+
+### 3. Mâlikî Mezhebi
+- **Hüküm:** Sedd-i zerâi' kaidesince haram ve bâtıldır.
+- **Kaynak İbâre:** *el-Hattâb (v. 954)* (Mawahibul_Jalil, C:04, S:368): «سدا للذريعة المفضية إلى ربا الفضل والنسيئة...»
+
+### 4. Hanbelî Mezhebi
+- **Hüküm:** Hile-i ribâ sayıldığından kat'iyyen haramdır.
+- **Kaynak İbâre:** *el-Merdâvî (v. 885)* (el_Insaf, C:04, S:371): «مسألة العينة فعلها محرم على الصحيح من المذهب...»
+
+## 3. MENŞE-İ HİLÂF VE İLLET TAHLİLİ
+Akitlerde niyet ve maksatlara mı (Cumhur), yoksa zâhirî lafız ve rükünlere mi (İmam Şâfiî) itibar edileceği kaidesindeki derin usûl hilâfıdır.
+
+## 4. TELFÎK DENETİMİ VE FETVÂ
+İki bağımsız akit ayrı meclislerde ve ön şart koşulmaksızın yapılırsa Şâfiî kavli üzere amel caiz görülür.
+`;
+
+/* =========================================================================
+   MARKDOWN PARSER & PAGE STRUCTURE BUILDER
+   ========================================================================= */
+
+function parseMarkdownToPages(mdText) {
+  const pages = [];
+  
+  // 1. FRONT COVER (OUTER) - MUST BE HARD DENSITY
+  pages.push({
+    density: 'hard',
+    type: 'cover-front',
+    html: `
+      <div class="cover-front">
+        <div class="cover-corner tl"></div>
+        <div class="cover-corner tr"></div>
+        <div class="cover-corner bl"></div>
+        <div class="cover-corner br"></div>
+        
+        <div class="shamsah">
+          <svg viewBox="0 0 24 24">
+            <path d="M12,2L14.5,7.5L20.5,8.5L16,13L17.5,19L12,16L6.5,19L8,13L3.5,8.5L9.5,7.5L12,2Z"/>
+          </svg>
+        </div>
+        
+        <div class="cover-kicker">Fıkhu'l-Mukâren & Tahrîk</div>
+        <div class="cover-title-ar">جَامِعُ الرُّخَصِ وَتَحْقِيقُ الْمَذَاهِبِ</div>
+        <div class="cover-title-tr">CÂMİU'R-RUHAS VE TAHKÎKU'L-MEZÂHİB</div>
+        <div class="cover-rule"></div>
+        <div class="cover-subtitle">Dört Mezhep Esaslı En Hafif ve Sahih Fıkıh Külliyatı<br><strong style="color:var(--gold); font-size:13px;">(LİTE TATBİKAT)</strong></div>
+        
+        <div class="cover-author">Tahkîk & Tahrîc-i Evvel</div>
+        <div class="cover-hint">Kapağı açmak için sağ kenardan çevirin &rsaquo;</div>
+      </div>
+    `
+  });
+
+  // 2. INSIDE FRONT COVER (EBRU / YAN KÂĞIDI) - HARD DENSITY
+  pages.push({
+    density: 'hard',
+    type: 'cover-inside-front',
+    html: `
+      <div class="cover-inside">
+        <div class="ex-libris-frame">
+          <div class="ex-libris-title">VAKF-I KÜTÜB</div>
+          <div class="ex-libris-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+          <div class="ex-libris-text">
+            <strong>CÂMİU'R-RUHAS KÜLLİYATI</strong><br>
+            Ciltli Hususî Nüsha<br>
+            <em style="color:#7a6a57; font-size:11.5px;">"Dinde zorluk yoktur; kolaylaştırınız, güçleştirmeyiniz."</em>
+          </div>
+        </div>
+      </div>
+    `
+  });
+
+  // 3. TITLE PAGE & MUKADDİME (PAGE 1) - SOFT DENSITY
+  pages.push({
+    density: 'soft',
+    type: 'content',
+    folio: 1,
+    headerLeft: "CÂMİU'R-RUHAS",
+    headerRight: "MUKADDİME",
+    html: `
+      <div class="page-inner">
+        <div class="running-header">
+          <span class="book-title-mini">CÂMİU'R-RUHAS</span>
+          <span>MUKADDİME</span>
+        </div>
+        
+        <div class="serlevha-box">
+          <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+          <div class="section-kicker">USÛL VE METODOLOJİ</div>
+          <h2 style="font-family:'Cormorant Garamond',serif; margin:4px 0; font-size:20px; color:var(--ruby);">
+            En Hafif ve Sahih Fıkıh Ruhsatları
+          </h2>
+        </div>
+        
+        <p style="margin-top:0; text-align:justify;">
+          Bu eser; İslam Hukuku'nun dört hak mezhebi (<strong>Hanefî, Mâlikî, Şâfiî, Hanbelî</strong>) dairesinde kalarak, mükellefi meşakkatten halâs eden <em>en hafif, en pratik ve sahih ruhsatları</em> bir araya getirmek maksadıyla telif edilmiştir.
+        </p>
+
+        <div style="background:rgba(212,175,55,0.08); border-left:3px solid var(--gold); padding:8px 12px; margin:10px 0; font-size:13.5px;">
+          <strong>Temel İlkeler:</strong>
+          <ul style="margin:6px 0 0 16px; padding:0;">
+            <li><strong>Sıfır Halüsinasyon:</strong> Kaynak ibareler klasik ana metinlerden (el-Mebsût, el-Mecmû', el-İnsâf, el-Kâfî) aynen nakledilmiştir.</li>
+            <li><strong>Telfîk-i Bâtıl Güvencesi:</strong> Dört mezhebin birden bâtıl sayacağı icmâ-i mürekkep ihlallerinden titizlikle sakınılmıştır.</li>
+            <li><strong>Şeffaf İstidlâl:</strong> Menşe-i hilâf ve illetler usûle göre tahlil edilmiştir.</li>
+          </ul>
+        </div>
+        
+        <div class="running-footer">
+          <span>Tahrîc-i Evvel</span>
+          <span class="folio-num">— 1 —</span>
+        </div>
+      </div>
+    `
+  });
+
+  // 4. TABLE OF CONTENTS (FİHRİST - PAGE 2)
+  pages.push({
+    density: 'soft',
+    type: 'toc',
+    folio: 2,
+    headerLeft: "FİHRİST",
+    headerRight: "EBVÂB-I KÜLLİYAT",
+    html: `
+      <div class="page-inner">
+        <div class="running-header">
+          <span class="book-title-mini">CÂMİU'R-RUHAS</span>
+          <span>FİHRİST-İ EBVÂB</span>
+        </div>
+        
+        <div class="section-kicker">MÜNDERECÂT</div>
+        <h2 class="chapter-title" style="font-size:20px;">Fihrist ve Meseleler</h2>
+        
+        <ul class="toc-list" id="tocPageList">
+          <li class="toc-item" data-goto="3">
+            <span class="toc-num">001</span>
+            <span class="toc-label">Abdestte Niyetin Farziyeti</span>
+            <span class="toc-page">s. 3</span>
+          </li>
+          <li class="toc-item" data-goto="4">
+            <span class="toc-num">002</span>
+            <span class="toc-label">Tertip ve Muvâlât (Peşpeşe Yıkama)</span>
+            <span class="toc-page">s. 5</span>
+          </li>
+          <li class="toc-item" data-goto="5">
+            <span class="toc-num">003</span>
+            <span class="toc-label">Karşı Cinsle Temasın Abdesti Bozması</span>
+            <span class="toc-page">s. 7</span>
+          </li>
+          <li class="toc-item" data-goto="6">
+            <span class="toc-num">004</span>
+            <span class="toc-label">Vücuttan Kan veya İrin Çıkması</span>
+            <span class="toc-page">s. 9</span>
+          </li>
+          <li class="toc-item" data-goto="7">
+            <span class="toc-num">005</span>
+            <span class="toc-label">Seferde İki Namazın Birleştirilmesi (Cem')</span>
+            <span class="toc-page">s. 11</span>
+          </li>
+          <li class="toc-item" data-goto="8">
+            <span class="toc-num">006</span>
+            <span class="toc-label">Namazda Elleri Kaldırmak (Ref'u'l-Yedeyn)</span>
+            <span class="toc-page">s. 13</span>
+          </li>
+          <li class="toc-item" data-goto="9">
+            <span class="toc-num">007</span>
+            <span class="toc-label">İmama Uyanın Fatiha Okuma Mecburiyeti</span>
+            <span class="toc-page">s. 15</span>
+          </li>
+          <li class="toc-item" data-goto="10">
+            <span class="toc-num">008</span>
+            <span class="toc-label">Veresiye Borcun Takası (Kâli' bi'l-Kâli')</span>
+            <span class="toc-page">s. 17</span>
+          </li>
+          <li class="toc-item" data-goto="11">
+            <span class="toc-num">009</span>
+            <span class="toc-label">Vadeli Alıp Peşin Satmak (Bey'u'l-Îne)</span>
+            <span class="toc-page">s. 19</span>
+          </li>
+        </ul>
+        
+        <div style="margin-top:auto; font-size:12px; color:var(--ink-dim); text-align:center; font-style:italic;">
+          * İlgili meseleye gitmek için fihrist satırına dokunun.
+        </div>
+
+        <div class="running-footer">
+          <span>Münderecât</span>
+          <span class="folio-num">— 2 —</span>
+        </div>
+      </div>
+    `
+  });
+
+  // Parse Sections from Markdown
+  const rawSections = mdText.split(/---\s*[\r\n]+/);
+  let currentFolio = 3;
+
+  rawSections.forEach((sec) => {
+    const trimmed = sec.trim();
+    if (!trimmed || trimmed.startsWith('# CÂMİU\'R-RUHAS') || trimmed.startsWith('### MUKADDİME')) return;
+
+    // Check if it's a MESELE block
+    if (trimmed.includes('MESELE ')) {
+      // Extract details
+      const bolumMatch = trimmed.match(/#\s*BÖLÜM:\s*([^\r\n]+)/);
+      const meseleMatch = trimmed.match(/##\s*(MESELE\s*\d+:[^\r\n]+)/);
+      const bolumTitle = bolumMatch ? bolumMatch[1].trim() : "KITÂBÜ'T-TAHÂRET";
+      const meseleTitle = meseleMatch ? meseleMatch[1].trim() : "Fıkıh Meselesi";
+
+      // Extract Ruhsat
+      const ruhsatMatch = trimmed.match(/##\s*1\.\s*RUHSAT[^\n]+([\s\S]*?)(?=##\s*2\.|$)/);
+      let ruhsatHtml = "";
+      if (ruhsatMatch) {
+        const rText = ruhsatMatch[1];
+        const kolaylik = (rText.match(/- \*\*Uygulanacak Kolaylık:\*\*\s*([^\r\n]+)/) || ["",""])[1];
+        const mezhep = (rText.match(/- \*\*Esas Alınan Mezhep:\*\*\s*([^\r\n]+)/) || ["",""])[1];
+        ruhsatHtml = `
+          <div class="ruhsat-banner">
+            <span class="ruhsat-badge">RUHSAT & LİTE TATBİKAT</span>
+            <div class="ruhsat-text">${kolaylik}</div>
+            <div style="font-size:12px; color:var(--emerald); margin-top:3px; font-weight:600;">
+              Esas Mezhep: <u>${mezhep}</u>
+            </div>
+          </div>
+        `;
+      }
+
+      // Extract 4 Mezhep
+      const mezhepMatch = trimmed.match(/##\s*2\.\s*DÖRT MEZHEBİN DELİL[^\n]+([\s\S]*?)(?=##\s*3\.|$)/);
+      let mezhepGridHtml = "";
+      if (mezhepMatch) {
+        const mText = mezhepMatch[1];
+        
+        function extractMezhep(name, cls) {
+          const regex = new RegExp(`###\\s*\\d*\\.?\\s*${name}[\\s\\S]*?- \\*\\*Hüküm:\\*\\*\\s*([^\\r\\n]+)[\\s\\S]*?- \\*\\*Kaynak İbâre:\\*\\*\\s*([^\\r\\n]+)(?:\\r?\\n«([^»]+)»)?`);
+          const match = mText.match(regex);
+          if (match) {
+            const hukum = match[1];
+            const kaynak = match[2];
+            const arapca = match[3] || "";
+            return `
+              <div class="mezhep-card">
+                <div class="mezhep-header">
+                  <span class="mezhep-name">${name}</span>
+                  <span class="mezhep-tag ${cls}">${cls}</span>
+                </div>
+                <div class="mezhep-hukum"><strong>Hüküm:</strong> ${hukum}</div>
+                <div style="font-size:11.5px; color:var(--ink-dim);"><em>${kaynak}</em></div>
+                ${arapca ? `<div class="arabic-quote">« ${arapca.trim()} »</div>` : ''}
+              </div>
+            `;
+          }
+          return "";
+        }
+
+        const h1 = extractMezhep('Hanefî Mezhebi', 'hanefi');
+        const h2 = extractMezhep('Şâfiî Mezhebi', 'shafii');
+        const h3 = extractMezhep('Mâlikî Mezhebi', 'maliki');
+        const h4 = extractMezhep('Hanbelî Mezhebi', 'hanbeli');
+        mezhepGridHtml = `<div class="mezhep-grid">${h1}${h2}${h3}${h4}</div>`;
+      }
+
+      // Extract Menşe-i Hilaf & Telfik
+      const hilafMatch = trimmed.match(/##\s*3\.\s*MENŞE-İ HİLÂF[^\n]+([\s\S]*?)(?=##\s*4\.|$)/);
+      const telfikMatch = trimmed.match(/##\s*4\.\s*TELFÎK[^\n]+([\s\S]*?)$/);
+      
+      const hilafText = hilafMatch ? hilafMatch[1].trim().replace(/###/g, '<strong>').replace(/\n/g, '<br>') : "";
+      const telfikText = telfikMatch ? telfikMatch[1].trim().replace(/\n/g, '<br>') : "";
+
+      // PAGE A (Sol Sayfa): Mesele Başlığı, Ruhsat ve Mezhep Haritası
+      pages.push({
+        density: 'soft',
+        type: 'content',
+        folio: currentFolio,
+        headerLeft: bolumTitle,
+        headerRight: meseleTitle.split(':')[0],
+        html: `
+          <div class="page-inner">
+            <div class="running-header">
+              <span class="book-title-mini">${bolumTitle}</span>
+              <span>${meseleTitle.split(':')[0]}</span>
+            </div>
+            
+            <div class="section-kicker">${bolumTitle}</div>
+            <h2 class="chapter-title">${meseleTitle}</h2>
+            
+            ${ruhsatHtml}
+            ${mezhepGridHtml}
+
+            <div class="running-footer">
+              <span>Câmiu'r-Ruhas</span>
+              <span class="folio-num">— ${currentFolio} —</span>
+            </div>
+          </div>
+        `
+      });
+      currentFolio++;
+
+      // PAGE B (Sağ Sayfa): Menşe-i Hilaf, İllet ve Telfik Denetimi
+      pages.push({
+        density: 'soft',
+        type: 'content',
+        folio: currentFolio,
+        headerLeft: meseleTitle.split(':')[0],
+        headerRight: "TELFÎK & FETVÂ",
+        html: `
+          <div class="page-inner">
+            <div class="running-header">
+              <span class="book-title-mini">${meseleTitle.split(':')[0]}</span>
+              <span>TELFÎK & FETVÂ</span>
+            </div>
+            
+            <div class="section-kicker">USÛLÎ TAHLİL</div>
+            <h3 style="font-family:'Cormorant Garamond',serif; margin:0 0 8px; font-size:18px; color:var(--leather-outer);">
+              Menşe-i Hilâf ve İllet Tahlili
+            </h3>
+            
+            <div style="font-size:calc(var(--book-font-size) * 0.94); text-align:justify; line-height:1.55; color:var(--ink);">
+              ${hilafText}
+            </div>
+
+            <div class="telfik-box">
+              <div class="telfik-title">
+                <span>⚖</span> TELFÎK DENETİMİ VE FETVÂ GÜVENCESİ
+              </div>
+              <div style="line-height:1.45;">
+                ${telfikText}
+              </div>
+            </div>
+
+            <div class="running-footer">
+              <span>Lite Tatbikat Tahkîki</span>
+              <span class="folio-num">— ${currentFolio} —</span>
+            </div>
+          </div>
+        `
+      });
+      currentFolio++;
+    }
+  });
+
+  // 5. HATİME / SÖZLÜK (Colophon page)
+  pages.push({
+    density: 'soft',
+    type: 'content',
+    folio: currentFolio,
+    headerLeft: "CÂMİU'R-RUHAS",
+    headerRight: "HÂTİME",
+    html: `
+      <div class="page-inner">
+        <div class="running-header">
+          <span class="book-title-mini">CÂMİU'R-RUHAS</span>
+          <span>HÂTİME-İ KÜLLİYAT</span>
+        </div>
+        
+        <div class="serlevha-box" style="padding:10px;">
+          <div class="bismillah" style="font-size:20px;">وَآخِرُ دَعْوَاهُمْ أَنِ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ</div>
+          <div class="section-kicker">HÂTİME VE TESCİL</div>
+        </div>
+
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--ruby); margin:8px 0 6px;">
+          Fıkhî Istılahat Lügatçesi
+        </h3>
+        <ul style="font-size:13px; line-height:1.45; margin:0; padding-left:16px;">
+          <li><strong>Telfîk-i Bâtıl:</strong> Dört mezhebin birden geçersiz sayacağı şekilde hükümleri birleştirmek (icmâ-i mürekkep ihlali). Bu külliyatta kesinlikle men edilmiştir.</li>
+          <li><strong>Ruhsat-ı Şer'iyye:</strong> Meşakkat anında mükellefe tanınan sahih ve meşru kolaylık.</li>
+          <li><strong>Muvâlât:</strong> Abdest uzuvlarını araya kuruyacak kadar fasıla vermeden peşpeşe yıkamak.</li>
+          <li><strong>Sebîlayn:</strong> İdrar ve gaita yolları (ön ve arka avret mahalleri).</li>
+          <li><strong>Kâli' bi'l-Kâli':</strong> Vadeli bir borcun başka bir vadeli borçla takası (Deyn bi'd-Deyn). İcmâen bâtıldır.</li>
+        </ul>
+
+        <div style="margin-top:auto; border-top:1px solid rgba(212,175,55,0.3); padding-top:10px; text-align:center; font-style:italic; font-size:12.5px; color:var(--ink-dim);">
+          Telif ve Tahkîk Tamamlandı.
+        </div>
+
+        <div class="running-footer">
+          <span>Hâtime</span>
+          <span class="folio-num">— ${currentFolio} —</span>
+        </div>
+      </div>
+    `
+  });
+  currentFolio++;
+
+  // Ensure even number of content pages so back cover aligns correctly
+  if (pages.length % 2 !== 0) {
+    pages.push({
+      density: 'soft',
+      type: 'blank',
+      folio: currentFolio,
+      html: `
+        <div class="page-inner" style="display:flex; align-items:center; justify-content:center; text-align:center;">
+          <div style="opacity:0.4; font-family:'Cormorant Garamond',serif; font-style:italic;">
+            (Beyâz Sahîfe — Notlar İçin Ayrılmıştır)
+          </div>
+        </div>
+      `
+    });
+    currentFolio++;
+  }
+
+  // 6. INSIDE BACK COVER (EBRU) - HARD DENSITY
+  pages.push({
+    density: 'hard',
+    type: 'cover-inside-back',
+    html: `
+      <div class="cover-inside">
+        <div class="ex-libris-frame" style="max-width:260px;">
+          <div class="ex-libris-title">CİLT VE TEZHİP</div>
+          <div class="cover-rule" style="margin:10px auto;"></div>
+          <div class="ex-libris-text" style="font-size:12.5px;">
+            Haza'l-Kitab<br>
+            <strong>CÂMİU'R-RUHAS VE TAHKÎKU'L-MEZÂHİB</strong><br>
+            Sert Cilt (Hardcover) Mekanizması ile Ciltlenmiştir.
+          </div>
+        </div>
+      </div>
+    `
+  });
+
+  // 7. OUTER BACK COVER - HARD DENSITY
+  pages.push({
+    density: 'hard',
+    type: 'cover-back',
+    html: `
+      <div class="cover-front" style="justify-content:center;">
+        <div class="cover-corner tl"></div>
+        <div class="cover-corner tr"></div>
+        <div class="cover-corner bl"></div>
+        <div class="cover-corner br"></div>
+
+        <div class="shamsah" style="width:74px; height:74px; margin-bottom:14px;">
+          <svg viewBox="0 0 24 24">
+            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/>
+          </svg>
+        </div>
+
+        <div class="cover-title-ar" style="font-size:22px;">تَمَّتْ بِحَمْدِ اللَّهِ</div>
+        <div class="cover-rule"></div>
+        <p style="font-family:'Cormorant Garamond',serif; font-size:14px; color:#c9b78f; margin:0; max-width:240px; line-height:1.4;">
+          Dört Mezhep Fıkhının Ruhsat ve Kolaylık Külliyatı
+        </p>
+
+        <div class="cover-hint" style="bottom:24px;">Ön kapağa dönmek için sol kenardan çevirin</div>
+      </div>
+    `
+  });
+
+  return pages;
+}
+
+/* =========================================================================
+   APPLICATION CONTROLLER
+   ========================================================================= */
+
+let pageFlipInstance = null;
+let currentPagesData = [];
+let basePageWidth = 460;
+let basePageHeight = 670;
+let currentZoom = 1.0;
+let currentFontSize = 15.5;
+
+const flipbookElement = document.getElementById('flipbook');
+const pageStatusEl = document.getElementById('pageStatus');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const closeFrontBtn = document.getElementById('closeFrontBtn');
+const closeBackBtn = document.getElementById('closeBackBtn');
+const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+const zoomDisplay = document.getElementById('zoomDisplay');
+const fontIncBtn = document.getElementById('fontIncBtn');
+const fontDecBtn = document.getElementById('fontDecBtn');
+const zoomInBtn = document.getElementById('zoomInBtn');
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+const zoomResetBtn = document.getElementById('zoomResetBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const fileInput = document.getElementById('fileInput');
+const filePickerBtn = document.getElementById('filePickerBtn');
+const filePathDisplay = document.getElementById('filePathDisplay');
+
+// Modal Elements
+const tocModal = document.getElementById('tocModal');
+const openTocBtn = document.getElementById('openTocBtn');
+const closeTocModal = document.getElementById('closeTocModal');
+const modalTocList = document.getElementById('modalTocList');
+
+function renderBookFromMarkdown(mdContent) {
+  // Destroy old instance if exists
+  if (pageFlipInstance && typeof pageFlipInstance.destroy === 'function') {
+    pageFlipInstance.destroy();
+    pageFlipInstance = null;
+  }
+  flipbookElement.innerHTML = '';
+
+  // Parse into pages
+  currentPagesData = parseMarkdownToPages(mdContent);
+
+  // Create DOM page elements
+  currentPagesData.forEach((pageData, index) => {
+    const pageEl = document.createElement('div');
+    pageEl.className = 'page';
+    pageEl.setAttribute('data-density', pageData.density); // 'hard' or 'soft'
+    pageEl.dataset.pageIndex = String(index);
+    pageEl.innerHTML = pageData.html;
+    flipbookElement.appendChild(pageEl);
+  });
+
+  // Compute responsive dimensions
+  const isMobile = window.innerWidth <= 920;
+  const targetW = isMobile ? Math.round(window.innerWidth * 0.92) : Math.round(basePageWidth * currentZoom);
+  const targetH = isMobile ? Math.round(window.innerHeight * 0.68) : Math.round(basePageHeight * currentZoom);
+
+  document.documentElement.style.setProperty('--page-w', targetW + 'px');
+  document.documentElement.style.setProperty('--page-h', targetH + 'px');
+
+  // Initialize St.PageFlip
+  pageFlipInstance = new St.PageFlip(flipbookElement, {
+    width: targetW,
+    height: targetH,
+    size: 'fixed', // Strict fixed size for proper 3D rigid board rotation
+    minWidth: 280,
+    maxWidth: 1200,
+    minHeight: 400,
+    maxHeight: 1400,
+    showCover: true, // CRITICAL: Enables single front cover & back cover rigid closing!
+    maxShadowOpacity: 0.55,
+    usePortrait: isMobile,
+    drawShadow: true,
+    flippingTime: 850,
+    startPage: 0,
+    autoSize: true,
+    mobileScrollSupport: false
+  });
+
+  pageFlipInstance.loadFromHTML(document.querySelectorAll('#flipbook .page'));
+
+  // Listen to flip events
+  pageFlipInstance.on('flip', (e) => {
+    updateUIState(e.data);
+  });
+
+  pageFlipInstance.on('changeState', (e) => {
+    updateUIState(pageFlipInstance.getCurrentPageIndex());
+  });
+
+  updateUIState(0);
+  populateTocModal();
+  bindTocClicks();
+}
+
+function updateUIState(currentPageIdx) {
+  if (!pageFlipInstance) return;
+  const total = currentPagesData.length;
+
+  if (currentPageIdx === 0) {
+    pageStatusEl.innerHTML = '<strong>Ön Kapak (Cilt)</strong>';
+  } else if (currentPageIdx === total - 1) {
+    pageStatusEl.innerHTML = '<strong>Arka Kapak</strong>';
+  } else if (currentPageIdx === 1) {
+    pageStatusEl.innerHTML = 'İç Kapak &amp; Sayfa 1';
+  } else {
+    const leftNum = currentPageIdx;
+    const rightNum = Math.min(currentPageIdx + 1, total - 1);
+    pageStatusEl.textContent = `Sayfa ${leftNum} – ${rightNum} / ${total - 2}`;
+  }
+
+  prevBtn.disabled = currentPageIdx <= 0;
+  nextBtn.disabled = currentPageIdx >= total - 1;
+}
+
+/* =========================================================================
+   ZOOM & FONT RESIZING MECHANICS
+   ========================================================================= */
+
+function applyZoom(newZoom) {
+  currentZoom = Math.max(0.65, Math.min(1.5, newZoom));
+  zoomDisplay.textContent = Math.round(currentZoom * 100) + '%';
+  
+  const w = Math.round(basePageWidth * currentZoom);
+  const h = Math.round(basePageHeight * currentZoom);
+  
+  document.documentElement.style.setProperty('--page-w', w + 'px');
+  document.documentElement.style.setProperty('--page-h', h + 'px');
+  
+  if (pageFlipInstance && typeof pageFlipInstance.updateSize === 'function') {
+    pageFlipInstance.updateSize(w, h);
+  }
+}
+
+function applyFontSize(delta) {
+  currentFontSize = Math.max(12, Math.min(23, currentFontSize + delta));
+  document.documentElement.style.setProperty('--book-font-size', currentFontSize + 'px');
+  fontSizeDisplay.textContent = currentFontSize.toFixed(1) + 'px';
+}
+
+/* =========================================================================
+   FİHRİST & NAVIGATION
+   ========================================================================= */
+
+function populateTocModal() {
+  modalTocList.innerHTML = '';
+  const list = document.createElement('ul');
+  list.className = 'toc-list';
+
+  const meseleNames = [
+    { title: "Mukaddime ve Metodoloji", page: 2 },
+    { title: "Fihrist-i Ebvâb", page: 3 },
+    { title: "MESELE 001: Abdestte Niyetin Farziyeti", page: 4 },
+    { title: "MESELE 002: Abdestte Tertip ve Muvâlât", page: 6 },
+    { title: "MESELE 003: Karşı Cinsle Temasın Abdesti Bozması", page: 8 },
+    { title: "MESELE 004: Vücuttan Kan veya İrin Çıkması", page: 10 },
+    { title: "MESELE 005: Yolculukta Namazların Birleştirilmesi (Cem')", page: 12 },
+    { title: "MESELE 006: Namazda Elleri Kaldırmak (Ref'u'l-Yedeyn)", page: 14 },
+    { title: "MESELE 007: İmama Uyanın Fatiha Okuma Mecburiyeti", page: 16 },
+    { title: "MESELE 008: Veresiye Borcun Takası (Kâli' bi'l-Kâli')", page: 18 },
+    { title: "MESELE 009: Vadeli Alıp Peşin Satmak (Bey'u'l-Îne)", page: 20 },
+    { title: "Hâtime ve Fıkhî Istılahat Lügatçesi", page: 22 }
+  ];
+
+  meseleNames.forEach((item, idx) => {
+    const li = document.createElement('li');
+    li.className = 'toc-item';
+    li.innerHTML = `
+      <span class="toc-num">${String(idx + 1).padStart(2, '0')}</span>
+      <span class="toc-label">${item.title}</span>
+      <span class="toc-page">s. ${item.page}</span>
+    `;
+    li.addEventListener('click', () => {
+      tocModal.classList.remove('active');
+      if (pageFlipInstance) pageFlipInstance.turnToPage(item.page);
+    });
+    list.appendChild(li);
+  });
+
+  modalTocList.appendChild(list);
+}
+
+function bindTocClicks() {
+  document.querySelectorAll('#tocPageList .toc-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const pageIndex = parseInt(item.getAttribute('data-goto'), 10);
+      if (!isNaN(pageIndex) && pageFlipInstance) {
+        // Map 1-based fihrist index to 0-based StPageFlip page
+        pageFlipInstance.turnToPage(pageIndex);
+      }
+    });
+  });
+}
+
+/* =========================================================================
+   EVENT LISTENERS & BINDINGS
+   ========================================================================= */
+
+// Navigation
+prevBtn.addEventListener('click', () => {
+  if (pageFlipInstance) pageFlipInstance.flipPrev('bottom');
+});
+
+nextBtn.addEventListener('click', () => {
+  if (pageFlipInstance) pageFlipInstance.flipNext('bottom');
+});
+
+// Front Hard Cover Close
+closeFrontBtn.addEventListener('click', () => {
+  if (pageFlipInstance) {
+    pageFlipInstance.turnToPage(0);
+  }
+});
+
+// Back Hard Cover Close
+closeBackBtn.addEventListener('click', () => {
+  if (pageFlipInstance) {
+    pageFlipInstance.turnToPage(currentPagesData.length - 1);
+  }
+});
+
+// Font size buttons
+fontIncBtn.addEventListener('click', () => applyFontSize(1));
+fontDecBtn.addEventListener('click', () => applyFontSize(-1));
+
+// Zoom buttons
+zoomInBtn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
+zoomOutBtn.addEventListener('click', () => applyZoom(currentZoom - 0.1));
+zoomResetBtn.addEventListener('click', () => applyZoom(1.0));
+
+// Fullscreen Toggle
+fullscreenBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+});
+
+// Modal open/close
+openTocBtn.addEventListener('click', () => tocModal.classList.add('active'));
+closeTocModal.addEventListener('click', () => tocModal.classList.remove('active'));
+tocModal.addEventListener('click', (e) => {
+  if (e.target === tocModal) tocModal.classList.remove('active');
+});
+
+// File picker trigger
+filePickerBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    filePathDisplay.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      renderBookFromMarkdown(evt.target.result);
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+});
+
+// Drag and Drop MD file directly onto window
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    filePathDisplay.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      renderBookFromMarkdown(evt.target.result);
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+});
+
+// Keyboard Navigation
+document.addEventListener('keydown', (e) => {
+  if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+  if (!pageFlipInstance) return;
+
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+    e.preventDefault();
+    pageFlipInstance.flipNext('bottom');
+  } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+    e.preventDefault();
+    pageFlipInstance.flipPrev('bottom');
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    pageFlipInstance.turnToPage(0); // Closes front hard cover
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    pageFlipInstance.turnToPage(currentPagesData.length - 1); // Closes back hard cover
+  } else if (e.key === '+' || e.key === '=') {
+    applyZoom(currentZoom + 0.1);
+  } else if (e.key === '-' || e.key === '_') {
+    applyZoom(currentZoom - 0.1);
+  } else if (e.key === 'Escape') {
+    tocModal.classList.remove('active');
+  }
+});
+
+// Window Resize Auto-Adapt
+window.addEventListener('resize', () => {
+  const isMobile = window.innerWidth <= 920;
+  const targetW = isMobile ? Math.round(window.innerWidth * 0.92) : Math.round(basePageWidth * currentZoom);
+  const targetH = isMobile ? Math.round(window.innerHeight * 0.68) : Math.round(basePageHeight * currentZoom);
+  
+  document.documentElement.style.setProperty('--page-w', targetW + 'px');
+  document.documentElement.style.setProperty('--page-h', targetH + 'px');
+
+  if (pageFlipInstance && typeof pageFlipInstance.updateSize === 'function') {
+    pageFlipInstance.updateSize(targetW, targetH);
+  }
+});
+
+/* =========================================================================
+   INITIALIZATION
+   ========================================================================= */
+
+// Try local fetch first (if served via localhost / local web server)
+async function initApp() {
+  let loadedText = null;
+  try {
+    const res = await fetch('Camiur_Ruhas_Nihai_Kulliyat.md');
+    if (res.ok) {
+      loadedText = await res.text();
+    }
+  } catch (err) {
+    // If running via direct file:// or CORS blocks fetch, fallback seamlessly
+  }
+
+  renderBookFromMarkdown(loadedText || DEFAULT_MD_SOURCE);
+}
+
+initApp();
+</script>
+
+</body>
+</html>
