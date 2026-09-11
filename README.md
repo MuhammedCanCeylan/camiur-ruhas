@@ -1,3 +1,5 @@
+<div align="center">
+
 ```
  ███   ███  █   █ █████ █   █ ████
 █   █ █   █ ██ ██   █   █   █ █   █
@@ -16,8 +18,6 @@
 █   █  ███  █   █ █   █ ████
 ```
 
-<div align="center">
-
 # CÂMİU'R-RUHAS VE TAHKÎKU'L-MEZÂHİB
 
 **Dört Hak Mezhep Esaslı, En Hafif ve Sahih Amelî Fıkıh Külliyatı**
@@ -27,7 +27,7 @@
 [![Made with Three.js](https://img.shields.io/badge/3D%20Engine-Three.js-000000?logo=three.js&logoColor=white)](https://threejs.org/)
 [![Physics: Cannon.js](https://img.shields.io/badge/Physics-Cannon.js-orange)](https://schteppe.github.io/cannon.js/)
 [![Page Flip: St.PageFlip](https://img.shields.io/badge/Page%20Flip-St.PageFlip-blueviolet)](https://nodlik.github.io/StPageFlip/)
-[![Zero Dependency](https://img.shields.io/badge/Deployment-Zero%20Dependency-brightgreen)](#viii-kurulum-dağıtım-ve-github-pages-yayını)
+[![Zero Dependency](https://img.shields.io/badge/Deployment-Zero%20Dependency-brightgreen)](#ix-kurulum-dağıtım-ve-github-pages-yayını)
 [![Status](https://img.shields.io/badge/Kanon-500%2F500%20Tamamlandı-success)](#iii-külliyatın-yapı-taşları-ve-bölüm-mimarisi)
 
 [Repoyu Görüntüle](https://github.com/MuhammedCanCeylan/camiur-ruhas) · [Geliştirici Profili](https://github.com/MuhammedCanCeylan)
@@ -43,11 +43,12 @@
 3. [Külliyatın Yapı Taşları ve Bölüm Mimarisi](#iii-külliyatın-yapı-taşları-ve-bölüm-mimarisi)
 4. [Birinci Kısım: 500 Amelî Düğümün Sistematik Analizi](#iv-birinci-kısım-500-amelî-düğümün-sistematik-analizi-özet-kanon)
 5. [İkinci Kısım: El-Müttefek Aleyh (100 Kesin İcmâ Kanunnamesi)](#v-i̇kinci-kısım-el-müttefek-aleyh-100-kesin-i̇cmâ-kanunnamesi)
-6. [Dijital Mimari ve 3D Fiziksel Kütüphane Motoru](#vi-dijital-mimari-ve-3d-fiziksel-kütüphane-motoru)
-7. [Yapay Zekâ ve Yazılım Mimarisi](#vii-yapay-zekâ-ve-yazılım-mimarisi-ai--software-engineering)
-8. [Masadaki 5 Asıl Kitabın Kataloğu](#viii-masadaki-5-asıl-kitabın-kataloğu)
-9. [Kurulum, Dağıtım ve GitHub Pages Yayını](#ix-kurulum-dağıtım-ve-github-pages-yayını)
-10. [Hâtime ve Mühür](#x-hâtime-ve-mühür)
+6. [Sistem Mimarisi ve Veri Akışı](#vi-sistem-mimarisi-ve-veri-akışı)
+7. [Dijital Mimari ve 3D Fiziksel Kütüphane Motoru](#vii-dijital-mimari-ve-3d-fiziksel-kütüphane-motoru)
+8. [Yapay Zekâ ve Yazılım Mimarisi](#viii-yapay-zekâ-ve-yazılım-mimarisi-ai--software-engineering)
+9. [Masadaki 5 Asıl Kitabın Kataloğu](#ix-masadaki-5-asıl-kitabın-kataloğu)
+10. [Kurulum, Dağıtım ve GitHub Pages Yayını](#x-kurulum-dağıtım-ve-github-pages-yayını)
+11. [Hâtime ve Mühür](#xi-hâtime-ve-mühür)
 
 ---
 
@@ -254,7 +255,37 @@ Külliyatın ikinci kısmı, fürûat ihtilaflarının bittiği ve İslam Hukuku
 
 ---
 
-## VI. Dijital Mimari ve 3D Fiziksel Kütüphane Motoru
+## VI. Sistem Mimarisi ve Veri Akışı
+
+```mermaid
+flowchart TD
+    SRC["📚 Klasik Nasslar<br/>(Serahsî, Kâsânî, Nevevî,<br/>İbn Abdilberr, İbn Kudâme)"] --> VDB["🧠 Vektör Veri Tabanı<br/>(LanceDB / SQLite)"]
+    VDB -->|"Semantik Benzerlik"| AI["🤖 Nöro-Sembolik<br/>Derleme Motoru"]
+    AI -->|"Telfîk Denetimi &<br/>İcmâ-i Mürekkep Filtresi"| CANON["📜 Doğrulanmış Kanon<br/>(fikh_verified_canon.json)"]
+    CANON --> MD["📝 500 Mesele +<br/>100 Maddelik İcmâ<br/>(Markdown Külliyatı)"]
+    MD -->|"JSON Gömme"| HTML["🌐 index.html<br/>(Tek Parça Uygulama)"]
+
+    subgraph "Tarayıcı İçi 3D Kütüphane"
+        HTML --> SCENE["🎨 Three.js Sahnesi<br/>(Işık, Kamera, Doku)"]
+        HTML --> PHYS["⚙️ Cannon.js Fizik Motoru<br/>(Yerçekimi, Çarpışma)"]
+        SCENE --> BOOKS["📖 5 Fiziksel Kitap"]
+        PHYS --> BOOKS
+        BOOKS -->|"Tıklama"| FLIP["📄 St.PageFlip<br/>Çift Sayfa Motoru"]
+        HTML --> SEARCH["🔍 Enter Tuşlu<br/>Evrensel Arama"]
+        SEARCH --> BOOKS
+    end
+
+    USER(("👤 Okuyucu")) -->|"HTTPS / GitHub Pages"| HTML
+```
+
+**Veri akışı özeti:**
+`Klasik Nasslar` → `Vektör İndeksleme` → `Nöro-Sembolik Derleme Motoru` → `Telfîk Denetimi` → `Doğrulanmış Kanon` → `Markdown Külliyat` → `Tek Parça HTML/WebGL Uygulaması` → `3D Kütüphane Deneyimi`
+
+> Not: Üretim/derleme aşaması (Python + LLM tabanlı tahrîc motoru) çevrimdışı bir süreçtir; nihai çıktı olan `index.html`, sıfır sunucu bağımlılığıyla doğrudan tarayıcıda çalışır.
+
+---
+
+## VII. Dijital Mimari ve 3D Fiziksel Kütüphane Motoru
 
 Bu proje sadece teorik bir metin derlemesi değildir; modern bilgisayar grafikleri ve web mühendisliğinin imkânlarıyla donatılmış bir 3D WebGL kütüphanesidir.
 
@@ -304,7 +335,7 @@ Arama terimi girilip **Enter** tuşuna basıldığında; 500 mesele başlığı 
 
 ---
 
-## VII. Yapay Zekâ ve Yazılım Mimarisi (AI & Software Engineering)
+## VIII. Yapay Zekâ ve Yazılım Mimarisi (AI & Software Engineering)
 
 Bu proje, geleneksel metin tahrîci ile modern yapay zekâ ve web grafik mühendisliğini birleştiren **uçtan uca (end-to-end)** bir yazılım projesidir.
 
@@ -329,7 +360,7 @@ Bu proje, geleneksel metin tahrîci ile modern yapay zekâ ve web grafik mühend
 
 ---
 
-## VIII. Masadaki 5 Asıl Kitabın Kataloğu
+## IX. Masadaki 5 Asıl Kitabın Kataloğu
 
 | # | Cilt | Renk | İçerik |
 |---|---|---|---|
@@ -341,7 +372,7 @@ Bu proje, geleneksel metin tahrîci ile modern yapay zekâ ve web grafik mühend
 
 ---
 
-## IX. Kurulum, Dağıtım ve GitHub Pages Yayını
+## X. Kurulum, Dağıtım ve GitHub Pages Yayını
 
 Proje sıfır bağımlılıkla (Zero-Dependency), harici bir sunucuya veya veritabanı motoruna ihtiyaç duymadan doğrudan tarayıcı üzerinde çalışacak şekilde tasarlanmıştır.
 
@@ -376,7 +407,7 @@ adresinde 3D fizik motoru ve tüm kütüphanesiyle canlıya alınır.
 
 ---
 
-## X. Hâtime ve Mühür
+## XI. Hâtime ve Mühür
 
 > *"Ruhsatlar dinde tembellik ve heva heves için değil; meşakkat ve ızdırar anında müminin dinini koruyarak ibadetine ve muamelatına devam edebilmesi için vazedilmiş ilahi kolaylıklardır. Aslolan takva ve azimettir; meşakkat anında ise ruhsatla amel etmek sünnettir."*
 >
